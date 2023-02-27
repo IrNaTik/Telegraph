@@ -1,4 +1,4 @@
-from views import index
+from .views import index
 
 
 def urlpatterns(app):

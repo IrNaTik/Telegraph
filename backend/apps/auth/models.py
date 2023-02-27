@@ -3,6 +3,8 @@ from sqlalchemy import (Column, String, Integer, Date, ForeignKey,
 
 meta = MetaData()
 
+__all__ = ['user']
+
 user = Table(
     'user', meta,
     Column('id', Integer, primary_key=True)
