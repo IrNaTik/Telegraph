@@ -21,12 +21,7 @@ if __name__ == "__main__":  # эта строчка указывает, что �
     setup_app(app)  # настраиваем приложение
     web.run_app(app)  # запускаем приложение
 
-    handler = app.make_handler(
-        debug=debug,
-    )
-
-    if debug:
-        aiohttp_autoreload.start()
+   
 
 
 
