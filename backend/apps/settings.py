@@ -1,6 +1,6 @@
 import pathlib
 import yaml
-import aiohttp_debugtoolbar
+
 
 
 BASE_DIR = pathlib.Path(__file__).parent.parent

@@ -1,12 +1,12 @@
 from aiohttp import web
-
-
+from aiohttp_jwt import JWTMiddleware
 import aiohttp_debugtoolbar  #debug 
 
 from apps.settings import config
 from apps.auth.models import pg_context
 from apps.auth.routes import urlpatterns
 from apps.auth.models import pg_context
+
 
 
 def setup_routes(application):
@@ -25,8 +25,6 @@ def setup_app(application):
 app = web.Application()
 
 setup_app(application=app)
-
-
 
 
 if __name__ == '__main__':
