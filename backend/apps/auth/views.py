@@ -14,3 +14,8 @@ class AuthView(web.View):
         json = {"data": "test"}
         return web.json_response(json)
         # return  web.Response(text="sdasdaslk;d apws;kd")
+async def index(request):
+    
+    data = { "message": "Hello world"}
+    
+    return web.Response(text=json.dumps(data), status=200)
