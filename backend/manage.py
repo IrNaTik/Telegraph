@@ -1,5 +1,5 @@
 from aiohttp import web  
-
+from aiohttp_devtools.cli import cli
 
 from apps.auth.routes import urlpatterns
 
@@ -20,6 +20,9 @@ app = web.Application()
 if __name__ == "__main__":  # эта строчка указывает, что данный файл можно запустить как скрипт
     setup_app(app)  # настраиваем приложение
     web.run_app(app)  # запускаем приложение
+    cli()
+
+
 
    
 
