@@ -8,3 +8,6 @@ class AuthView(web.View):
         print(self)
         json = {"data": "test"}
         return web.json_response(json)
+
+async def handler(request):
+    return web.Response(text="asda", status=200)

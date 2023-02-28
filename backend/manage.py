@@ -1,6 +1,7 @@
 from aiohttp import web
-import aiohttp_debugtoolbar
 
+
+import aiohttp_debugtoolbar  #debug 
 
 from apps.settings import config
 from apps.auth.models import pg_context
@@ -12,8 +13,9 @@ def setup_routes(application):
     urlpatterns(application)  
 
 def setup_external_libraries(application: web.Application) -> None:
-    # настройки внешних библиотек
-    pass
+    application['config'] = config
+    aiohttp_debugtoolbar.setup(application)
+    application.cleanup_ctx.append(pg_context)
 
 def setup_app(application):
     setup_external_libraries(application)  
@@ -21,10 +23,10 @@ def setup_app(application):
 
 
 app = web.Application()
-aiohttp_debugtoolbar.setup(app)
-app['config'] = config
-urlpatterns(app)
-app.cleanup_ctx.append(pg_context)
+
+setup_app(application=app)
+
+
 
 
 if __name__ == '__main__':
