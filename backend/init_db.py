@@ -12,7 +12,7 @@ def create_tables(engine):
 
 def sample_data(engine):
     con = engine.connect()
-    con.execute(user.insert(), {"id": 1})
+    con.execute(user.insert(), {"id": 1, 'name': "tihon"})
     con.close()
 
 
