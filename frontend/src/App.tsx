@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import axios from 'axios';
+import React from 'react';
+import { Route, BrowserRouter, Routes } from 'react-router-dom';
+import './App.scss';
+
+import Auth from './components/Auth/auth';
 
 function App() {
-  const [data, setData] = useState('None');
-
-  useEffect(() => {
-    axios.get("http://localhost:8080")
-      .then((response) => {
-          console.log(response);
-          console.log(response.data)
-    })
-  }, [])
+  
 
   return (
-    <div className="App">
-      
-    </div>
+    <BrowserRouter>
+        <Routes>
+        <Route path='/login' element={<Auth/>}></Route>
+        </Routes>
+    </BrowserRouter>
   );
 }
 

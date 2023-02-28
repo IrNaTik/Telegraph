@@ -1,9 +1,5 @@
-from .views import index, registration, chat
+from .views import AuthView
 
 
 def urlpatterns(app):
-    app.router.add_get('/', index)
-    app.router.add_get('/user', registration)
-    app.router.add_get('/ws', chat)
-    
-    
+    app.router.add_get('/login', AuthView)
