@@ -7,9 +7,6 @@ from apps.settings import config
 from apps.auth.routes import urlpatterns
 
 
-
-
-
 def setup_routes(application):
     urlpatterns(application)  
 
