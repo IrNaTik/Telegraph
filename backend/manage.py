@@ -5,10 +5,14 @@ import aiohttp_debugtoolbar  #debug
 from init_db import pg_context
 from apps.settings import config
 from apps.auth.routes import urlpatterns
-
+from apps.auth.middlewares import Token_handler
 
 def setup_routes(application):
     urlpatterns(application)  
+
+def setup_middlewares(app):
+    token = Token_handler()
+    app.middlewares.append(token.middleware)
 
 def setup_external_libraries(application: web.Application) -> None:
     application['config'] = config
@@ -16,6 +20,7 @@ def setup_external_libraries(application: web.Application) -> None:
     application.cleanup_ctx.append(pg_context)
 
 def setup_app(application):
+    setup_middlewares(application)
     setup_external_libraries(application)  
     setup_routes(application) 
 

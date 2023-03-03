@@ -1,7 +1,6 @@
 import yaml 
-import json
+import jwt
 from aiohttp import web
-from jwt import decode, encode
 from typing import Any, Callable
 
 
@@ -12,23 +11,29 @@ class Token_handler:
             self.JWT_CONF = yaml.safe_load(f)
 
     async def check_signature(self, request: web.Request):
-        if request.rel_url == '\login':
+        if request.method == "GET":
+        #  if request.rel_url == '\login':
             pass
             #check diff
-        else:
-            tokens = await request.content.read(-1)
-            tokens = json.load(tokens)
-            asses_token = tokens['AssesToken']
+        else:   
+            tokens = dict(request.raw_headers)
+            tokens = dict([(key.decode('utf-8'), value.decode('utf-8')) for key, value in tokens.items()])
+            asses_token = tokens.get("Authorization").split(' ')[1]
             
             try:
-                asses__token_data = decode(asses_token, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
+                asses_token_data = jwt.decode(asses_token, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
             except:
                 pass
                 # raise 404
+
+            user_id = asses_token_data['user_id']
+            print(user_id)
 
 
 
     #check asses token 
     @web.middleware
-    async def handle_token(self, request: web.Request, handler: Callable):
-        pass
+    async def middleware(self, request: web.Request, handler: Callable):
+        await self.check_signature(request)
+
+        return web.Response(text="adsds", headers={'Access-Control-Allow-Origin': 'http://localhost:3000'})
