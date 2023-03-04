@@ -17,5 +17,6 @@ def j_response(data, status = 200):
 class AuthView(web.View):
     async def get(self):
         ss = {"data": "test"}
+        
         return j_response(data = ss)
 

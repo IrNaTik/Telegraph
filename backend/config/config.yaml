@@ -1,8 +1,8 @@
 postgres:
-  database: telegraf
-  user: postgres
-  password: postgres
-  host: localhost
+  database: ''
+  user: 'tihon'
+  password: '1111'
+  host: 172.17.0.2
   port: 5432
   minsize: 1
   maxsize: 5

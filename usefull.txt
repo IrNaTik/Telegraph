@@ -1,1 +1,28 @@
 docker exec -it 440c76ac4a3c psql -U postgres
+
+cursor - поименнованное место в памяти, хранящее текущее значение select запроса
+https://insightsoftware.com/blog/what-is-odbc/
+ODBC - open database connectivity (API для доступа к бд)
+ODBC driver - преобразует что-либо в sql и возвращает результат
+
+A data source name (DSN) is a data structure containing information about a specific database to which an Open Database Connectivity (ODBC) driver needs to connect. (Note: DSN also stands for Deep Space Network.)
+
+The DSN, which resides either in the registry or as a separate text file, contains information such as the database name, directory and driver. Depending on the type of DSN, it can also contain information like the ID and password of the user.
+
+A developer creates a separate DSN for each database and specifies its DSN within a program to connect to a particular database. In contrast, DSN-less connections require that all the necessary information be defined within the program.
+
+
+dialect+driver://username:password@host:port/database
+
+sudo docker run --name telegraph -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres
+
+
+сначала просто подключение к сокету, потом ответ сервера и отправка chat_id серверу
+
+Сделать полные чаты (p2p) + структуры для хранения сообщений 
+
+1) Сделать фронт для чатов один на один
+2) Сделать класс для представления чатов и нормальную струтктуру для хранения WebSocketResponse
+3) Удаление объекта если он отключился
+4) Сделать струтктуру для users и сообщений чатов
+
