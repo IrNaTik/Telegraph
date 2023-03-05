@@ -5,11 +5,16 @@ from sqlalchemy import create_engine, MetaData
 from apps.settings import config
 from apps.auth.models import user
 
-DSN = "postgresql://{user}:{password}@{host}:{port}/{database}"
+DSN = "postgresql+psycopg2://postgres:postgresг@{host}:{port}/{database}"
 
 def create_tables(engine):
-    meta = MetaData()
-    meta.create_all(bind=engine, tables=[user])
+
+    # meta = MetaData()
+    user.create(engine)
+
+    
+
+
 
 
 def sample_data(engine):
@@ -22,7 +27,8 @@ if __name__ == '__main__':
     db_url = DSN.format(**config['postgres'])
     engine = create_engine(db_url)
 
-    create_tables(engine)
+    print(engine)
+    # create_tables(engine)
     sample_data(engine)
 
 
@@ -32,7 +38,7 @@ async def pg_context(app):
         database=conf['database'],
         user=conf['user'],
         password=conf['password'],
-        host=conf['host'],
+        host=conf['host'] await app['db'].wait_closed(),
         port=conf['port'],
         minsize=conf['minsize'],
         maxsize=conf['maxsize'],
