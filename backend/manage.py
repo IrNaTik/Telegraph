@@ -25,7 +25,7 @@ def setup_middlewares(app):
 
 def setup_middlewares(app):
     token = Token_handler()
-    app.middlewares.append(token.middleware)
+    # app.middlewares.append(token.middleware)
 
 def setup_external_libraries(application: web.Application) -> None:
     application['config'] = config

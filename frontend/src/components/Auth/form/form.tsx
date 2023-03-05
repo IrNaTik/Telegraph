@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from '../../../api/axios';
 import { useAppSelector } from "../../../store/store";
 
 interface LoginForm {
@@ -8,7 +8,6 @@ interface LoginForm {
 }
 
 export default function Form(props: any) {
-    const host = useAppSelector(state => state.HostStore.host)
     const Atoken = useAppSelector(state => state.TokenStore.Atoken)
     const [form, setForm] = useState<LoginForm>({
         login: "",
@@ -23,28 +22,41 @@ export default function Form(props: any) {
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
+<<<<<<< HEAD
         console.log("asd")
         console.log(Atoken);
         axios.post(`${host}/login`, form, {
+=======
+
+        setForm({'login': '',
+                'password': ''})
+        
+        axios.post('/login', form, {
+>>>>>>> 1fde46b97935ba570dcf07b87b75183e855f6ac1
             headers: {
-                "Authorization": `Bearer ${Atoken}`
-            } 
+                "Authorization": `Bearer ${Atoken}`,
+            },
+            withCredentials: true
         } )
     }
 
     useEffect(() => {
-        axios.get(`${host}/login`)
+        axios.get('/login')
+
+        
         .then((response) => {
-            console.log(response)  // check tokens
+            
+              // check tokens
         })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
-        <div className="Auth-Form">
-            <form onSubmit={handleSubmit}>
-                <p>Welcome</p>
-                <input type="email" name="login" placeholder="Login" onChange={handleForm}/>
+        <div className="Form">
+            <form onSubmit={handleSubmit} className="Auth-Form">
+                <p>Welcome</p> 
+                <input type="text" name="login" placeholder="Login" onChange={handleForm}/> {// set for email
+                }
                 <input type="password" name="password"  placeholder="password" onChange={handleForm}/>
                 <input type="submit" value="Sign In" />
                 <a href="#">Forgot Passord</a>

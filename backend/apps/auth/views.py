@@ -1,52 +1,71 @@
 import jwt
 import yaml
-from aiohttp import web, web_ws
+from aiohttp import web
 from datetime import datetime, timedelta
-import json
 
 from .models import user
 
-with open('config/jwt.yaml') as f:
-    JWT_CONF = yaml.safe_load(f)
 
-# class ResponseBusted(web.Response):
-#     def __init__(self, text, status):
-#         super().__init__(text=text, status=status,
-#                          headers={'Access-Control-Allow-Origin': 'http://localhost:3000'})
-
-# def j_response(data, status = 200):
-#     return web.json_response(data=data,
-#                                 headers=)
 
 class AuthView(web.View):
+    def __init__(self, request: web.Request) -> None:
+
+        self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000'}
+        self.POST = {
+            
+                    }
+        self.OPTIONS = {
+            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Credentials': 'true',
+            'Allow': 'OPTIONS, GET, POST',
+            'Access-Control-Allow-Headers': '''Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, 
+                                               Set-Cookie'''
+        }
+    
+        with open('config/jwt.yaml') as f:
+            self.JWT_CONF = yaml.safe_load(f)
+
+        super().__init__(request)
 
     async def get(self):
         #MUST CHECK IF USER IS AUTORIZATED
-        ss = {"data": "test"}
-        return web.json_response(data = ss)
+        print('Good')
+        print(self.request.headers)
+        ss = {"Asd": "ASd"}
+        return web.json_response(data = ss, headers=self.GET)
 
 
     async def post(self):
-        #check valid user
-        #get from db data   
+        #get from db data
+        #valid self.request.data login password
 
         ATpayload = {
             'user_id': 1,
             'exp': datetime.utcnow() +
-            timedelta(minutes=JWT_CONF['exp_asses'])
+            timedelta(minutes=self.JWT_CONF['exp_asses'])
         }
 
         RTpayload = {
             'user_id': 1,
             'exp': datetime.utcnow() +
-                timedelta(minutes=JWT_CONF['exp_refresh'])
-        }
-        jwt_token = jwt.encode(ATpayload, JWT_CONF['ATsecret'], JWT_CONF['algoritm'])
-        refresh_token = jwt.encode(RTpayload, JWT_CONF['RTsecret'], JWT_CONF['algoritm'])
-        
-        resp = {
-            "AssesToken":  jwt_token,
-            "RefreshToken": refresh_token
+                timedelta(minutes=self.JWT_CONF['exp_refresh'])
         }
 
-        return  web.json_response(resp)
+        jwt_token = jwt.encode(ATpayload, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
+        refresh_token = jwt.encode(RTpayload, self.JWT_CONF['RTsecret'], self.JWT_CONF['algoritm'])
+    
+        value = {
+            'AssesToken': jwt_token
+        }
+        
+        resp = web.json_response(data=value, headers=self.POST)
+
+        resp.set_cookie(name="Ref", value=refresh_token,
+                        max_age=self.JWT_CONF['exp_refresh'] * 60)
+
+        return resp
+
+
+    async def options(self):
+        return web.Response(headers=self.OPTIONS)
+
