@@ -11,7 +11,8 @@ class Token_handler:
             self.JWT_CONF = yaml.safe_load(f)
 
     async def check_signature(self, request: web.Request):
-        if request.method == "GET":
+        
+        if request.method == "GET" or request.method == "OPTIONS":
         #  if request.rel_url == '\login':
             pass
             #check diff
@@ -34,6 +35,7 @@ class Token_handler:
     #check asses token 
     @web.middleware
     async def middleware(self, request: web.Request, handler: Callable):
-        await self.check_signature(request)
+        # await self.check_signature(request)
+        resp = await handler(request)
+        return resp
 
-        return web.Response(text="adsds", headers={'Access-Control-Allow-Origin': 'http://localhost:3000'})
