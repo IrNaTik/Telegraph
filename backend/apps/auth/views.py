@@ -19,13 +19,6 @@ with open('config/jwt.yaml') as f:
 #                                 headers=)
 
 class AuthView(web.View):
-<<<<<<< HEAD
-    async def get(self):
-        ss = {"data": "test"}
-        
-        return j_response(data = ss)
-=======
->>>>>>> 08415bcfb8f35f2e2e8c4f27892e7f6f6932483d
 
     async def get(self):
         #MUST CHECK IF USER IS AUTORIZATED

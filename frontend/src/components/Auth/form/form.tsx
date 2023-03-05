@@ -24,6 +24,7 @@ export default function Form(props: any) {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         console.log("asd")
+        console.log(Atoken);
         axios.post(`${host}/login`, form, {
             headers: {
                 "Authorization": `Bearer ${Atoken}`

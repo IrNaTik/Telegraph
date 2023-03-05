@@ -26,3 +26,6 @@ sudo docker run --name telegraph -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=
 3) Удаление объекта если он отключился
 4) Сделать струтктуру для users и сообщений чатов
 
+
+Если не работает установить react-router и react-router-dom
+
