@@ -1,6 +1,6 @@
+from aiohttp import web
 from .views import AuthView
 
 
 def urlpatterns(app):
-    app.router.add_get('/login', AuthView)
-    
+    app.add_routes([web.view('/login', AuthView)])

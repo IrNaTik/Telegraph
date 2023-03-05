@@ -10,6 +10,8 @@ from routes import urlpatterns
 
 
 
+from apps.auth.middlewares import Token_handler
+
 def setup_routes(application):
     urlpatterns(application)  
     print(app.router.routes().__iter__())
@@ -17,12 +19,21 @@ def setup_routes(application):
         print(rout)
     
 
+def setup_middlewares(app):
+    token = Token_handler()
+    app.middlewares.append(token.middleware)
+
+def setup_middlewares(app):
+    token = Token_handler()
+    app.middlewares.append(token.middleware)
+
 def setup_external_libraries(application: web.Application) -> None:
     application['config'] = config
     aiohttp_debugtoolbar.setup(application)
     # application.cleanup_ctx.append(pg_context)
 
 def setup_app(application):
+    setup_middlewares(application)
     setup_external_libraries(application)  
     setup_routes(application) 
     
