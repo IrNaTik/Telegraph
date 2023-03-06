@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from .models import user
 
 
-
 class AuthView(web.View):
     def __init__(self, request: web.Request) -> None:
 
