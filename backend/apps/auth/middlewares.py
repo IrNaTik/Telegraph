@@ -20,6 +20,7 @@ class Token_handler:
             tokens = dict(request.raw_headers)
             tokens = dict([(key.decode('utf-8'), value.decode('utf-8')) for key, value in tokens.items()])
             asses_token = tokens.get("Authorization").split(' ')[1]
+            print(asses_token)
             
             try:
                 asses_token_data = jwt.decode(asses_token, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
@@ -38,4 +39,21 @@ class Token_handler:
         # await self.check_signature(request)
         resp = await handler(request)
         return resp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

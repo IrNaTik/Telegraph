@@ -1,6 +1,8 @@
 import jwt
+import json
 import yaml
 from aiohttp import web
+from multidict import CIMultiDictProxy
 from datetime import datetime, timedelta
 
 from .models import user
@@ -9,7 +11,9 @@ from .models import user
 class AuthView(web.View):
     def __init__(self, request: web.Request) -> None:
 
-        self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000'}
+        self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000',
+                    'Access-Control-Expose-Headers': '*', 
+                    'Access-Control-Allow-Credentials': 'true'}
         self.POST = {
             
                     }
@@ -17,8 +21,9 @@ class AuthView(web.View):
             'Access-Control-Allow-Origin': 'http://localhost:3000',
             'Access-Control-Allow-Credentials': 'true',
             'Allow': 'OPTIONS, GET, POST',
-            'Access-Control-Allow-Headers': '''Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, 
-                                               Set-Cookie'''
+            'Access-Control-Request-Method': 'POST',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
+            'Access-Control-Allow-Headers': '''Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, AssessToken'''
         }
     
         with open('config/jwt.yaml') as f:
@@ -27,17 +32,52 @@ class AuthView(web.View):
         super().__init__(request)
 
     async def get(self):
-        #MUST CHECK IF USER IS AUTORIZATED
-        print('Good')
-        print(self.request.headers)
+        asess_token = self.request.headers['AssessToken']
+
+        if asess_token:
+            try:
+                decoded = jwt.decode(asess_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
+                print('Валидный!!!!!')
+            except:
+                print('Просрочен!!!!!!')
+                decoded = False
+
+        if decoded:
+            return web.json_response(headers=self.GET, status=200)
+        
+        # На этом этапе у нас не валидный assess token и мы работаем с refresh token (и по необходимости создаём новый assess)
+
+        cookies = self.request.headers['Cookie']
+        refr = cookies[cookies.find('Ref')+4:]
+
+        try:
+            decoded = jwt.decode(refr, self.JWT_CONF['RTsecret'], algorithms=["HS256"])
+        except: # Пропиши exception 
+            decoded = False
+
+        if decoded:
+            # Valid refresh token
+            # if user_exists(): # Work with database
+            #     # User exists
+            #     pass
+            pass
+        else:
+            # Required to enter login with password
+            pass
+
+        print(decoded)
+        print(refr)
+        # refr = cookies['Ref']
+        # print(refr) # Т.к это не просто dict, а CIMultiDictProxy
         ss = {"Asd": "ASd"}
-        return web.json_response(data = ss, headers=self.GET)
+        return web.json_response(data = {'message': 'assess was valid'}, headers=self.GET)
 
 
     async def post(self):
         #get from db data
         #valid self.request.data login password
 
+        
         ATpayload = {
             'user_id': 1,
             'exp': datetime.utcnow() +
@@ -52,19 +92,21 @@ class AuthView(web.View):
 
         jwt_token = jwt.encode(ATpayload, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
         refresh_token = jwt.encode(RTpayload, self.JWT_CONF['RTsecret'], self.JWT_CONF['algoritm'])
-    
+        
         value = {
             'AssesToken': jwt_token
         }
         
-        resp = web.json_response(data=value, headers=self.POST)
+        resp = web.json_response(data=value, headers=self.OPTIONS)
+        print(resp)
 
-        resp.set_cookie(name="Ref", value=refresh_token,
+        resp.set_cookie(name="Ref", value=refresh_token, httponly=True ,
                         max_age=self.JWT_CONF['exp_refresh'] * 60)
 
         return resp
 
 
     async def options(self):
+        print('Baad')
         return web.Response(headers=self.OPTIONS)
 
