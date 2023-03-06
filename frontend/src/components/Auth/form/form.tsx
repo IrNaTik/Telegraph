@@ -22,26 +22,28 @@ export default function Form(props: any) {
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-<<<<<<< HEAD
-        console.log("asd")
-        console.log(Atoken);
-        axios.post(`${host}/login`, form, {
-=======
-
-        setForm({'login': '',
-                'password': ''})
+        
         
         axios.post('/login', form, {
->>>>>>> 1fde46b97935ba570dcf07b87b75183e855f6ac1
-            headers: {
-                "Authorization": `Bearer ${Atoken}`,
-            },
+            // headers: {
+            //     "Authorization": `Bearer ${Atoken}`,
+            // },
             withCredentials: true
-        } )
-    }
+        })
+        .then((response) => {
+            const AssessToken = response.data.AssesToken
+            console.log(AssessToken)
+            localStorage.setItem('AssessToken', AssessToken)
+        })
 
+        
+    }
+    
     useEffect(() => {
-        axios.get('/login')
+
+        const AssessToken = localStorage.getItem('AssessToken')
+        axios.get('/login', {headers: {'content-Type': 'application/json', 'Cookie': document.cookie, 'AssessToken': AssessToken },
+                            withCredentials: true})
 
         
         .then((response) => {

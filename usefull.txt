@@ -29,3 +29,11 @@ sudo docker run --name telegraph -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=
 
 Если не работает установить react-router и react-router-dom
 
+
+Опорный элемент(по центру) и ищем слева и српава меньшие и большие соответстввенно(или равны)
+Сделать проверку на assess: один раз пост и пару раз get(assess живёт минуту)
+
+
+
+
+

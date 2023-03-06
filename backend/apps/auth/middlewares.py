@@ -40,8 +40,20 @@ class Token_handler:
         resp = await handler(request)
         return resp
 
-<<<<<<< HEAD
-        return web.Response(text="adsds", headers={'Access-Control-Allow-Origin': 'http://localhost:3000',
-                                                   'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',})
-=======
->>>>>>> 1fde46b97935ba570dcf07b87b75183e855f6ac1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

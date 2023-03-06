@@ -1,52 +1,64 @@
-import aiopg.sa
+from database import Chat_Instance, User
 
-from sqlalchemy import create_engine, MetaData
+def create_tables():
 
-from apps.settings import config
-from apps.auth.models import user
+    user = User('Ignat', 'Drf43sdrf')
+    current_session.add(user)
 
-DSN = "postgresql+psycopg2://postgres:postgresг@{host}:{port}/{database}"
+create_tables()
 
-def create_tables(engine):
 
-    # meta = MetaData()
-    user.create(engine)
+
+
+# import aiopg.sa
+
+# from sqlalchemy import create_engine, MetaData
+
+# from apps.settings import config
+# from apps.auth.models import user
+
+# DSN = "postgresql+psycopg2://postgres:postgresг@{host}:{port}/{database}"
+
+# def create_tables(engine):
+
+#     # meta = MetaData()
+#     user.create(engine)
 
     
 
 
 
 
-def sample_data(engine):
-    con = engine.connect()
-    con.execute(user.insert(), {"id": 1, 'name': "tihon"})
-    con.close()
+# def sample_data(engine):
+#     con = engine.connect()
+#     con.execute(user.insert(), {"id": 1, 'name': "tihon"})
+#     con.close()
 
 
-if __name__ == '__main__':
-    db_url = DSN.format(**config['postgres'])
-    engine = create_engine(db_url)
+# if __name__ == '__main__':
+#     db_url = DSN.format(**config['postgres'])
+#     engine = create_engine(db_url)
 
-    print(engine)
-    # create_tables(engine)
-    sample_data(engine)
+#     print(engine)
+#     # create_tables(engine)
+#     sample_data(engine)
 
 
-async def pg_context(app):
-    conf = app['config']['postgres']
-    engine = await aiopg.sa.create_engine(
-        database=conf['database'],
-        user=conf['user'],
-        password=conf['password'],
-        host=conf['host'] await app['db'].wait_closed(),
-        port=conf['port'],
-        minsize=conf['minsize'],
-        maxsize=conf['maxsize'],
-    )
+# async def pg_context(app):
+#     conf = app['config']['postgres']
+#     engine = await aiopg.sa.create_engine(
+#         database=conf['database'],
+#         user=conf['user'],
+#         password=conf['password'],
+#         host=conf['host'] await app['db'].wait_closed(),
+#         port=conf['port'],
+#         minsize=conf['minsize'],
+#         maxsize=conf['maxsize'],
+#     )
 
-    app['db'] = engine
+#     app['db'] = engine
 
-    yield
+#     yield
 
-    app['db'].close()
-    await app['db'].wait_closed()
+#     app['db'].close()
+#     await app['db'].wait_closed()
