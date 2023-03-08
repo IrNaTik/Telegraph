@@ -14,9 +14,10 @@ from apps.auth.middlewares import Token_handler
 
 def setup_routes(application):
     urlpatterns(application)  
-    print(app.router.routes().__iter__())
-    for rout in app.router.routes().__iter__():
-        print(rout)
+
+    # print(app.router.routes().__iter__())
+    # for rout in app.router.routes().__iter__():
+    #     print(rout)
     
 
 def setup_middlewares(app):
@@ -26,6 +27,7 @@ def setup_middlewares(app):
 def setup_middlewares(app):
     token = Token_handler()
     # app.middlewares.append(token.middleware)
+
 
 def setup_external_libraries(application: web.Application) -> None:
     application['config'] = config

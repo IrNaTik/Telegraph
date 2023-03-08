@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from '../../../api/axios';
-import { useAppSelector } from "../../../store/store";
+
+import { useAppDispatch } from "src/store/store";
+import { update } from "src/store/tokens";
 
 interface LoginForm {
     login: string,
@@ -8,7 +10,7 @@ interface LoginForm {
 }
 
 export default function Form(props: any) {
-    const Atoken = useAppSelector(state => state.TokenStore.Atoken)
+    const dispatch = useAppDispatch()
     const [form, setForm] = useState<LoginForm>({
         login: "",
         password: ""
@@ -23,35 +25,12 @@ export default function Form(props: any) {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         
-        
-        axios.post('/login', form, {
-            // headers: {
-            //     "Authorization": `Bearer ${Atoken}`,
-            // },
-            withCredentials: true
-        })
+        axios.post('/login', form)
         .then((response) => {
             const AssessToken = response.data.AssesToken
-            console.log(AssessToken)
-            localStorage.setItem('AssessToken', AssessToken)
+            dispatch(update(AssessToken)) 
         })
-
-        
     }
-    
-    useEffect(() => {
-
-        const AssessToken = localStorage.getItem('AssessToken')
-        axios.get('/login', {headers: {'content-Type': 'application/json', 'Cookie': document.cookie, 'AssessToken': AssessToken },
-                            withCredentials: true})
-
-        
-        .then((response) => {
-            
-              // check tokens
-        })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
 
     return (
         <div className="Form">

@@ -9,6 +9,7 @@ from .models import user
 
 
 class AuthView(web.View):
+    
     def __init__(self, request: web.Request) -> None:
 
         self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000',
@@ -31,46 +32,41 @@ class AuthView(web.View):
 
         super().__init__(request)
 
-    async def get(self):
-        asess_token = self.request.headers['AssessToken']
-
-        if asess_token:
-            try:
-                decoded = jwt.decode(asess_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
-                print('Валидный!!!!!')
-            except:
-                print('Просрочен!!!!!!')
-                decoded = False
-
-        if decoded:
-            return web.json_response(headers=self.GET, status=200)
-        
-        # На этом этапе у нас не валидный assess token и мы работаем с refresh token (и по необходимости создаём новый assess)
-
-        cookies = self.request.headers['Cookie']
-        refr = cookies[cookies.find('Ref')+4:]
-
+    def valid_token(self):
         try:
-            decoded = jwt.decode(refr, self.JWT_CONF['RTsecret'], algorithms=["HS256"])
-        except: # Пропиши exception 
-            decoded = False
+            token = self.request.headers['AssessToken']
+            decoded = jwt.decode(token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
+                    #valid user
+            return True
+        except jwt.ExpiredSignatureError:
+            cookies = self.request.headers['Cookie']
+            refr = cookies[cookies.find('Ref')+4:]
+            self.set_token(refr)
 
-        if decoded:
-            # Valid refresh token
-            # if user_exists(): # Work with database
-            #     # User exists
-            #     pass
-            pass
+        except KeyError:
+            return True
+    
+    def set_token(self, ref_token):
+        '''
+            set valid asses and refresh token  token 
+        '''
+        try:
+            jwt.decode(ref_token, self.JWT_CONF['RTsecret'], algorithms=["HS256"]) # if user_exists(): # Work with database
+            return True
+        except jwt.ExpiredSignatureError:
+            return False # Required to enter login with passwordу
+            
+
+    async def get(self):
+        # try:
+        if self.valid_token():
+            return web.json_response(headers=self.GET, status=200)  # redirect to home
         else:
-            # Required to enter login with password
-            pass
+            return web.json_response(headers=self.GET, status=200)
+        # except:
+            # print("Eroor") # raise error
 
-        print(decoded)
-        print(refr)
-        # refr = cookies['Ref']
-        # print(refr) # Т.к это не просто dict, а CIMultiDictProxy
-        ss = {"Asd": "ASd"}
-        return web.json_response(data = {'message': 'assess was valid'}, headers=self.GET)
+        
 
 
     async def post(self):
@@ -98,7 +94,7 @@ class AuthView(web.View):
         }
         
         resp = web.json_response(data=value, headers=self.OPTIONS)
-        print(resp)
+
 
         resp.set_cookie(name="Ref", value=refresh_token, httponly=True ,
                         max_age=self.JWT_CONF['exp_refresh'] * 60)
@@ -107,6 +103,5 @@ class AuthView(web.View):
 
 
     async def options(self):
-        print('Baad')
         return web.Response(headers=self.OPTIONS)
 
