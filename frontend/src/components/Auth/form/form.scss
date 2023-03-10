@@ -1,0 +1,24 @@
+@import '../../../common/common.scss';
+
+.Form {
+    .Auth-Form {
+        display: flex;
+        margin: 0 auto;
+        max-width: 720px;
+        position: relative;
+        flex-direction: column;
+        flex: 1 1 auto;
+        align-items: center;    
+    }
+
+    .Header-Form {
+        text-align: center;
+        font-size: 2rem;
+        line-height: 110%;
+        margin: 22px 0 14px;
+    }
+    
+    .Title-Form {
+        color: $--secondary-text-color;
+    }
+}   

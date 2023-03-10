@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import axios from '../../../api/axios';
+import axios from 'src/api/axios';
 
 import { useAppDispatch } from "src/store/store";
 import { update } from "src/store/tokens";
+
+import Logo from "src/common/logo/logo";
 
 interface LoginForm {
     login: string,
@@ -35,13 +37,15 @@ export default function Form(props: any) {
     return (
         <div className="Form">
             <form onSubmit={handleSubmit} className="Auth-Form">
-                <p>Welcome</p> 
-                <input type="text" name="login" placeholder="Login" onChange={handleForm}/> {// set for email
-                }
-                <input type="password" name="password"  placeholder="password" onChange={handleForm}/>
-                <input type="submit" value="Sign In" />
-                <a href="#">Forgot Passord</a>
+                <Logo></Logo>
+                <h4 className="Header-Form">Sing in to Telegraf</h4>
+                <p className="Title-Form">Please enter you login and password</p> 
+                <input className="Input-Form" type="text" name="login" placeholder="Login" onChange={handleForm}/>  
+
+                <input className="Input-Form" type="password" name="password"  placeholder="password" onChange={handleForm}/>
+                <input className="Submit-Form" type="submit" value="Sign In" />
+                <a className="Link-Form"  href="#">Forgot Passord</a>
             </form>
         </div>
     )
-}
+} 

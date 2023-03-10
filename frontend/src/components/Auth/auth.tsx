@@ -19,6 +19,9 @@ export default function Auth(props: any) {
         })
     },[])
     return(
-        <Form></Form>
+        <div className="Auth">
+            <div className="Auth-Placeholder"></div>
+            <Form></Form>
+        </div>
     )
 }
