@@ -1,12 +1,11 @@
 @use './form/form.scss';
 
-.Form {
+.Auth {
+    
 
-
-    .Auth-Form {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        
+    .Auth-Placeholder {
+        flex: 1;
+        min-height: 3rem;
+        width: 100%;
     }
 }

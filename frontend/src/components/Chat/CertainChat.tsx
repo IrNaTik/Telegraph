@@ -12,12 +12,9 @@ function CertainChat() {
     const WS_URL = 'ws://localhost:8000/ws/chat/' // Подключение к сокету
     const { sendJsonMessage } = useWebSocket(decodeURI(WS_URL), {
         onOpen: () => {
-          console.log('WebSocket connection established.');
-
 
           // Отправка chat_id
-          const chatId= window.location.pathname.split('/').pop()
-          console.log(chatId)
+          const chatId = window.location.pathname.split('/').pop()
           sendJsonMessage({
             'type': 'chatId',
             'chatId': chatId
@@ -26,8 +23,7 @@ function CertainChat() {
         onMessage: (response) => {
           const data = JSON.parse(response.data) 
 
-          console.log(data)
-          if (data.type == "message"){
+          if (data.type === "message"){
             setMessages([...messages, data.message])
           }
           

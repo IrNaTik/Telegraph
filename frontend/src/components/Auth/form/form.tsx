@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
-import axios from '../../../api/axios';
-import { useAppSelector } from "../../../store/store";
+import React, { useState } from "react";
+import axios from 'src/api/axios';
+
+import { useAppDispatch } from "src/store/store";
+import { update } from "src/store/tokens";
+
+import Logo from "src/common/logo/logo";
 
 interface LoginForm {
     login: string,
@@ -8,7 +12,7 @@ interface LoginForm {
 }
 
 export default function Form(props: any) {
-    const Atoken = useAppSelector(state => state.TokenStore.Atoken)
+    const dispatch = useAppDispatch()
     const [form, setForm] = useState<LoginForm>({
         login: "",
         password: ""
@@ -23,46 +27,25 @@ export default function Form(props: any) {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         
-        
-        axios.post('/login', form, {
-            // headers: {
-            //     "Authorization": `Bearer ${Atoken}`,
-            // },
-            withCredentials: true
-        })
+        axios.post('/login', form)
         .then((response) => {
             const AssessToken = response.data.AssesToken
-            console.log(AssessToken)
-            localStorage.setItem('AssessToken', AssessToken)
+            dispatch(update(AssessToken)) 
         })
-
-        
     }
-    
-    useEffect(() => {
-
-        const AssessToken = localStorage.getItem('AssessToken')
-        axios.get('/login', {headers: {'content-Type': 'application/json', 'Cookie': document.cookie, 'AssessToken': AssessToken },
-                            withCredentials: true})
-
-        
-        .then((response) => {
-            
-              // check tokens
-        })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
 
     return (
         <div className="Form">
             <form onSubmit={handleSubmit} className="Auth-Form">
-                <p>Welcome</p> 
-                <input type="text" name="login" placeholder="Login" onChange={handleForm}/> {// set for email
-                }
-                <input type="password" name="password"  placeholder="password" onChange={handleForm}/>
-                <input type="submit" value="Sign In" />
-                <a href="#">Forgot Passord</a>
+                <Logo></Logo>
+                <h4 className="Header-Form">Sing in to Telegraf</h4>
+                <p className="Title-Form">Please enter you login and password</p> 
+                <input className="Input-Form" type="text" name="login" placeholder="Login" onChange={handleForm}/>  
+
+                <input className="Input-Form" type="password" name="password"  placeholder="password" onChange={handleForm}/>
+                <input className="Submit-Form" type="submit" value="Sign In" />
+                <a className="Link-Form"  href="#">Forgot Passord</a>
             </form>
         </div>
     )
-}
+} 

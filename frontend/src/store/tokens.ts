@@ -8,8 +8,8 @@ const initialState =  {
     name: 'tokens',
     initialState,
     reducers: {
-        update(state) {
-            state.Atoken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2Nzc4NjE4MDF9.OErNNP2fNDGWXrCiVdipFlzdj23cex5sP0KUQrLdxh8"
+        update(state, actions) {
+            state.Atoken = actions.payload
         }
     }
 
