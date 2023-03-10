@@ -1,34 +1,13 @@
-from database import Chat_Instance, User, metadata, engine, create_chat_messages_table, create_chat_messages_pagination_table
-from sqlalchemy.orm import Session, mapper
+from database import  metadata, engine, create_chat_messages_table, create_chat_messages_pagination_table, create_user_photos_table
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import Table, or_
 from sqlalchemy.sql import text
 
 __all__ = 'db_provider'
 
-class WorkWithDatabase():
-    def __init__(self, engine, metadata) -> None:
-        self.engine = engine
-        self.metadata = metadata
-
-        
-
-
-        # for i in range(10):
-        #     response = get_chat_messages_table(f'{i}', metadata)
-        # metadata.create_all(engine)
-        # current_session.add(user)
-
-    async def create_tables(self):
-        
-        async with engine.begin() as conn:
-            await conn.run_sync(metadata.create_all)
-
+class UserInstance():
     async def add_user(self, login, password):
         
         async with AsyncSession(engine) as session:
-            # user = User(login=login, password=password)
-            
             statement = text(f"""INSERT INTO user(login, password) VALUES('{login}', '{password}')""")
             await session.execute(statement)
             await session.commit()
@@ -37,21 +16,49 @@ class WorkWithDatabase():
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
             user_object = await session.execute(statement)
-            
             user_id = user_object.first().user_id
-            
-                #user_id = user.user_id
-            # async for row in user_object:
-            #     user_id = row.user_id
-            # user_object = await session.query(User).filter(User.login == login).first()
             
         return user_id
     
+    async def create_photos_table(self, user_login):
+        table_name = (str(user_login) + '_' +'photos').lower()
+        await create_user_photos_table(table_name, metadata, engine)
 
+    async def add_photo(self, user_login, photo_path):
+        table_name = (str(user_login) + '_' + 'photos').lower()
+        
+        async with AsyncSession(engine) as session:
+            statement = text(f"""INSERT INTO {table_name} (photo_path) VALUES('{photo_path}')""")
+            
+            await session.execute(statement)
+            await session.commit() 
+
+    async def update_access_data_table(self, user_login, last_visit, refresh_token):
+        user_id = await db_provider.user.get_user_id(user_login)
+        async with AsyncSession(engine) as session:
+            statement = text(f"""INSERT INTO user_access_data (last_visit, refresh_token) VALUES({last_visit}, {refresh_token})""")
+            
+            await session.execute(statement)
+            await session.commit() 
+        f'''UPDATE user_access_data
+        SET last_visit = {last_visit}, refresh_token= {refresh_token}
+        WHERE user_id = {user_id};'''
+
+    async def get_access_data_table(self, user_login):
+        user_id = await db_provider.user.get_user_id(user_login)
+        async with AsyncSession(engine) as session:
+            statement = text(f"""SELECT * FROM user WHERE user_id = '{user_id}' """)
+            user_object = await session.execute(statement)
+            user_data = user_object.first()
+
+        return user_data # Have keys refresh_token and last_visit
+
+
+class ChatInstance():
     async def add_chat(self, user1_login, user2_login):
         
-        user1_id = await self.get_user_id(user1_login)
-        user2_id = await self.get_user_id(user2_login)
+        user1_id = await db_provider.user.get_user_id(user1_login)
+        user2_id = await db_provider.user.get_user_id(user2_login)
 
         if not user1_id or not user2_id:
             print('No user with such login')
@@ -85,7 +92,7 @@ class WorkWithDatabase():
 
     async def add_message(self, table_name, sender_login, content):
         
-        sender_id = await self.get_user_id(sender_login)
+        sender_id = await db_provider.user.get_user_id(sender_login)
         async with AsyncSession(engine) as session:
             data = ( { "sender_id": sender_id, "content": content },)
             statement = text(f"""INSERT INTO {table_name} (sender_id, content) VALUES({sender_id}, '{content}')""")
@@ -95,7 +102,7 @@ class WorkWithDatabase():
         
 
     async def get_user_chats(self, user_login):
-        user_id = await self.get_user_id(user_login)
+        user_id = await db_provider.user.get_user_id(user_login)
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM chat_instance WHERE user_1 = '{user_id}' OR user_2 = '{user_id}' """)
             chat_objects_future = await session.execute(statement)
@@ -120,5 +127,17 @@ class WorkWithDatabase():
             for row in message_objects:
                 messages.append(row)
         return messages
+
+class WorkWithDatabase():
+    def __init__(self) -> None:
+        self.user = UserInstance()
+        self.chat = ChatInstance()
+
+    async def create_tables(self): 
+        async with engine.begin() as conn:
+            await conn.run_sync(metadata.create_all)
+
+
     
-db_provider = WorkWithDatabase(engine, metadata)
+db_provider = WorkWithDatabase()
+
