@@ -12,15 +12,23 @@ class Chat_Instance(Base):
     user_2 = sa.Column('user_2', sa.Integer, sa.ForeignKey('user.user_id'), nullable=False)
 
 
-def create_chat_messages_table(table_name, metadata, engine):
-    
+async def create_chat_messages_table(table_name, metadata, engine):
     table_object = sa.Table(table_name, metadata, 
                             sa.Column('message_id', sa.Integer, primary_key=True, nullable=False),
                             sa.Column('sender_id', sa.ForeignKey('user.user_id'), nullable=False),
                             sa.Column('content', sa.TEXT, nullable=False))
-    metadata.create_all(engine)
+    async with engine.begin() as conn:
+        await conn.run_sync(metadata.create_all)
+
+async def create_chat_messages_pagination_table(table_name, metadata, engine):
+    table_object = sa.Table(table_name, metadata, 
+                            # sa.Column('chat_id', sa.Integer, primary_key=True, nullable=False),
+                            sa.Column('user_id', sa.ForeignKey('user.user_id'), nullable=False),
+                            sa.Column('message_id', sa.Integer, nullable=False))
+    async with engine.begin() as conn:
+        await conn.run_sync(metadata.create_all)
     
-    return "Good"
+    
 
 
 

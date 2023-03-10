@@ -14,9 +14,9 @@ from apps.auth.middlewares import Token_handler
 
 def setup_routes(application):
     urlpatterns(application)  
-    print(app.router.routes().__iter__())
-    for rout in app.router.routes().__iter__():
-        print(rout)
+    # print(app.router.routes().__iter__())
+    # for rout in app.router.routes().__iter__():
+    #     print(rout)
     
 
 def setup_middlewares(app):
@@ -44,4 +44,5 @@ setup_app(application=app)
 
 
 if __name__ == '__main__':
+
     web.run_app(app)

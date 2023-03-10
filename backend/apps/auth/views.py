@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 
 from .models import user
 
+from database_work import db_provider
+
 
 
 class AuthView(web.View):
@@ -33,6 +35,10 @@ class AuthView(web.View):
         super().__init__(request)
 
     async def get(self):
+        # await db_provider.create_tables()
+        # user = await db_provider.add_user('JustGimli', 'rhiu3h2ikjvas')
+        # print(user)
+        
         asess_token = self.request.headers['AssessToken']
 
         if asess_token:
