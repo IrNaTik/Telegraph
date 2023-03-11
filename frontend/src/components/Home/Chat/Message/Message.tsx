@@ -12,7 +12,7 @@ enum Style {
 }
 
 export function Message({isSender=false}:IProp) {
-    
+     
 
     return (
         <div className="Message" style={{
