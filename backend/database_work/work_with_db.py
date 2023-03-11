@@ -1,26 +1,35 @@
 from database import  metadata, engine, create_chat_messages_table, create_chat_messages_pagination_table, create_user_photos_table
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
+from sqlalchemy import exc
 
 __all__ = 'db_provider'
 class BaseDbWorkMixin():
 
     @staticmethod
     async def add(table_name: str, arguments: dict):
-        keys = f'{", ".join([key for key in arguments.keys()])}'
+        try:
 
-        values = [arguments[key] if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
-        values = ', '.join(values)
-        async with AsyncSession(engine) as session:
-            statement = text(f"""INSERT INTO user({keys}) VALUES({values})""")
-            await session.execute(statement)
-            await session.commit()
-    
+            keys = f'{", ".join([key for key in arguments.keys()])}'
+
+            values = [arguments[key] if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
+            values = ', '.join(values)
+
+            async with AsyncSession(engine) as session:
+                
+                statement = text(f"""INSERT INTO user({keys}) VALUES({values})""")
+                await session.execute(statement)
+                await session.commit()
+        except exc.IntegrityError:
+            print("user is exists")        
+
 
 class UserInstance(BaseDbWorkMixin):
-    async def add_user(self, login, password):
+    async def add_user(self, login, password):  
         await BaseDbWorkMixin.add('user', {'login': login, 'password': password})
-    
+        
+
+
     async def get_user_id(self, login):
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)

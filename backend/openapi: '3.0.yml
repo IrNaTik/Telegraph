@@ -1,0 +1,47 @@
+openapi: '3.0.2'
+info:
+  title: Telegraf
+  version: '1.0'
+servers:
+  - url: https://0.0.0.0.:8000/
+paths:
+  /login:
+    get:
+      summary: Check user
+      description: Check valid user and if it is. With free query parameter
+      parameters:
+        - name: Asses Token
+          description: Jwt token for check signature  
+          in: header
+          required: false
+          schema: 
+            type: string
+      responses:
+        '200':
+          description: is valid or no
+          content:
+            application/json:
+              schema:
+                type: string
+                description: this is test string
+
+    post: 
+      summary: Get User data
+      description: Get User data and valid them
+      requestBody:
+        description: Asses and RT
+        content:
+          application/json:
+            schema:
+              required: 
+              - login
+              - password
+              properties:
+                  login:
+                    type: string
+                  password:
+                    type:
+                      string
+      responses:
+        '200':
+            description: Refresh token and assesToken

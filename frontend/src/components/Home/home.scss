@@ -1,0 +1,16 @@
+@use './Chat/Chat.scss';
+@use './ChatList/Clist.scss';
+
+
+.Home-Wrapper{
+
+    display: flex;
+
+    .Home-Clist {
+        position: relative;
+        width: 25%;
+    }
+
+    .Home-ChatIns {
+        width: 75%;
+    }}
