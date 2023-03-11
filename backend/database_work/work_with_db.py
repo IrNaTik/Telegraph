@@ -3,14 +3,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 
 __all__ = 'db_provider'
+class BaseDbWorkMixin():
 
-class UserInstance():
-    async def add_user(self, login, password):
-        
+    @staticmethod
+    async def add(table_name: str, arguments: dict):
+        keys = f'{", ".join([key for key in arguments.keys()])}'
+
+        values = [arguments[key] if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
+        values = ', '.join(values)
         async with AsyncSession(engine) as session:
-            statement = text(f"""INSERT INTO user(login, password) VALUES('{login}', '{password}')""")
+            statement = text(f"""INSERT INTO user({keys}) VALUES({values})""")
             await session.execute(statement)
             await session.commit()
+    
+
+class UserInstance(BaseDbWorkMixin):
+    async def add_user(self, login, password):
+        await BaseDbWorkMixin.add('user', {'login': login, 'password': password})
     
     async def get_user_id(self, login):
         async with AsyncSession(engine) as session:
@@ -26,24 +35,18 @@ class UserInstance():
 
     async def add_photo(self, user_login, photo_path):
         table_name = (str(user_login) + '_' + 'photos').lower()
-        
-        async with AsyncSession(engine) as session:
-            statement = text(f"""INSERT INTO {table_name} (photo_path) VALUES('{photo_path}')""")
-            
-            await session.execute(statement)
-            await session.commit() 
+        await BaseDbWorkMixin(table_name, {'photo_path': photo_path})
 
     async def update_access_data_table(self, user_login, last_visit, refresh_token):
         user_id = await db_provider.user.get_user_id(user_login)
         async with AsyncSession(engine) as session:
-            statement = text(f"""INSERT INTO user_access_data (last_visit, refresh_token) VALUES({last_visit}, {refresh_token})""")
+            statement = text(f'''UPDATE user_access_data
+                                 SET last_visit = {last_visit}, refresh_token= {refresh_token}
+                                 WHERE user_id = {user_id};''')
             
             await session.execute(statement)
             await session.commit() 
-        f'''UPDATE user_access_data
-        SET last_visit = {last_visit}, refresh_token= {refresh_token}
-        WHERE user_id = {user_id};'''
-
+        
     async def get_access_data_table(self, user_login):
         user_id = await db_provider.user.get_user_id(user_login)
         async with AsyncSession(engine) as session:
@@ -65,11 +68,7 @@ class ChatInstance():
             return 'No user with such login'
         
         # Creating Chat_Instance
-        async with AsyncSession(engine) as session:
-            # user = Chat_Instance(user_1=user1_id, user_2=user2_id)
-            statement = text(f"""INSERT INTO chat_instance(user_1, user_2) VALUES({user1_id}, {user2_id})""")
-            await session.execute(statement)
-            await session.commit()
+        await BaseDbWorkMixin.add('chat_instance', {'user_1': user1_id, 'user_2': user2_id})
 
         # Creating Chat_Messages table
         chat_name = (str(user1_login) + '_' + str(user2_login)).lower()
@@ -79,28 +78,14 @@ class ChatInstance():
         table_name = ('pagination_' + str(user1_login) + '_' + str(user2_login)).lower()
         await create_chat_messages_pagination_table(table_name, metadata, engine)
 
-        async with AsyncSession(engine) as session:
-            
-            statements = (text(f"""INSERT INTO {table_name}(user_id, message_id) VALUES({user1_id}, 0)"""), # If message_id = 0 it means that it is last message
-                          text(f"""INSERT INTO {table_name}(user_id, message_id) VALUES({user2_id}, 0)"""))
-            
-            for statement in statements:
-                await session.execute(statement)
-
-            await session.commit()
+        await BaseDbWorkMixin.add(table_name, {'user_id': user1_id, 'message_id': 0}) # If message_id = 0 it means that it is last message
+        await BaseDbWorkMixin.add(table_name, {'user_id': user2_id, 'message_id': 0})
 
 
     async def add_message(self, table_name, sender_login, content):
-        
         sender_id = await db_provider.user.get_user_id(sender_login)
-        async with AsyncSession(engine) as session:
-            data = ( { "sender_id": sender_id, "content": content },)
-            statement = text(f"""INSERT INTO {table_name} (sender_id, content) VALUES({sender_id}, '{content}')""")
-            
-            await session.execute(statement)
-            await session.commit() # It's important!!!
+        await BaseDbWorkMixin.add(table_name, {'sender_id': sender_id, 'content': content})
         
-
     async def get_user_chats(self, user_login):
         user_id = await db_provider.user.get_user_id(user_login)
         async with AsyncSession(engine) as session:
@@ -137,7 +122,5 @@ class WorkWithDatabase():
         async with engine.begin() as conn:
             await conn.run_sync(metadata.create_all)
 
-
-    
 db_provider = WorkWithDatabase()
 
