@@ -72,7 +72,7 @@ class UserInstance(BaseDbWorkMixin):
     
     async def get_by_prefix(self, prefix):
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT * FROM user_parametres WHERE username LIKE '{prefix}%' LIMIT 10""")
+            statement = text(f"""SELECT * FROM user WHERE login LIKE '{prefix}%' LIMIT 10""")
             objects = await session.execute(statement)
             objects = objects.all()
             return objects
