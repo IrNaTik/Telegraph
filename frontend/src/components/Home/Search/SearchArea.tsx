@@ -1,9 +1,13 @@
 import { set } from "immer/dist/internal";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import axios from "src/api/axios";
 import { Navigate } from "react-router";
 
-export default function SearchArea(props: any) {
+interface PropsInterface {
+    changeHref: Function
+}
+
+function SearchArea({ changeHref }: PropsInterface) {
     const [prefix, setPrefix] = useState('')
     const [globalUsers, setGlobalUsers] = useState<Array<string>>([])
     const [navigate, setNavigate] = useState<any>()
@@ -15,7 +19,7 @@ export default function SearchArea(props: any) {
                     'prefix': prefix
                 }})
                     .then(function (response) {
-                    
+                        console.log(response)
                         setGlobalUsers(response.data)
                     });
         } else {
@@ -28,7 +32,9 @@ export default function SearchArea(props: any) {
     }
 
     function openChat( idx: number){
-        setNavigate( <Navigate to={"/" + globalUsers[idx]} replace={false} />)
+        console.log(globalUsers[idx])
+        changeHref(globalUsers[idx])
+        // setNavigate( <Navigate to={"/" + globalUsers[idx]} replace={false} />)
     }
     return (
         <div className="Area-Wrapper">
@@ -46,3 +52,5 @@ export default function SearchArea(props: any) {
         </div>
     )
 }
+
+export default memo(SearchArea);

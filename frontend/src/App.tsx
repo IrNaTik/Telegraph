@@ -20,10 +20,10 @@ function App() {
         <Route path='/login' element={<Auth/>}></Route>
         {/* <Route path='/chat' element={<Chat/>}></Route>
         <Route path='/media-chat' element={<MediaChat/>}></Route> */}
-        <Route path='/' element={<Home/>}></Route>
+        <Route path='/' element={<Home props={'home'}/>}></Route>
 
         <Route path='/:username' 
-          element={<Home props={username}/>}></Route>
+          element={<Home props={'certainChat'}/>}></Route>
         <Route path='/chat/:chatId' element={<CertainChat    />}></Route>  
         </Routes>
 

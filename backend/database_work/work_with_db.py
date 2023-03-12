@@ -27,10 +27,10 @@ class BaseDbWorkMixin():
 
 class UserInstance(BaseDbWorkMixin):
     async def add_user(self, login, password):  
-        await BaseDbWorkMixin.add('user', {'login': login, 'password': password})
+        await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
         user_id = await db_provider.user.get_user_id(login)
-        await BaseDbWorkMixin.add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
-        await BaseDbWorkMixin.add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
+        await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
+        await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
 
 
     async def get_user_id(self, login):
@@ -48,7 +48,7 @@ class UserInstance(BaseDbWorkMixin):
 
     async def add_photo(self, user_login, photo_path):
         table_name = (str(user_login) + '_' + 'photos').lower()
-        await BaseDbWorkMixin(table_name, {'photo_path': photo_path})
+        await BaseDbWorkMixin._add(table_name, {'photo_path': photo_path})
 
     async def update_access_data_table(self, user_login, last_visit, refresh_token):
         user_id = await db_provider.user.get_user_id(user_login)
@@ -119,19 +119,30 @@ class ChatInstance():
 
         return user_chats # Объекты чатов
     
-    async def get_chat_messages(self, table_name):
+    async def get_chat_messages(self, table_name, message_id): # Возвращает 25 сообщений, начиная с определённого
         print(metadata)
         async with engine.connect() as con:
             
             
             # statement = text(f"""SELECT * FROM {table_name} ORDER BY message_id DESC WHERE message_id >= {} """) # Сделать пагинацию 
-            statement = text(f"""SELECT * FROM {table_name}""") 
-            message_objects = await con.execute(statement)
-            # print(message_objects)
-            messages = []
-            for row in message_objects:
-                messages.append(row)
-        return messages
+            # statement = text(f"""SELECT * FROM {table_name}""") 
+            statement = text(f'''SELECT user_id from user ORDER BY user_id DESC
+                                 LIMIT 25 ;''')
+            last_user = await con.execute(statement)
+            
+            last_user_id = last_user.first().user_id
+
+            statement = text(f'''SELECT user_id from user WHERE user_id <= {last_user_id - message_id}  ORDER BY user_id DESC
+                                   LIMIT 25;''')
+            
+            user_objects = await con.execute(statement)
+            users = user_objects.all()
+            # print(users)
+            
+            # messages = []
+            # for row in message_objects:
+            #     messages.append(row)
+        return users
 
 class WorkWithDatabase():
     def __init__(self) -> None:
