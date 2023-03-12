@@ -2,7 +2,6 @@ import jwt
 import json
 import yaml
 from aiohttp import web
-from multidict import CIMultiDictProxy
 from datetime import datetime, timedelta
 
 from .models import user
@@ -34,7 +33,7 @@ class AuthView(web.View):
 
         super().__init__(request)
 
-    def valid_token(self):
+    async def valid_token(self):
         
         try:
             asess_token = self.request.headers['Authorization']
@@ -42,7 +41,16 @@ class AuthView(web.View):
 
             try:
                 decoded = jwt.decode(asess_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
-                print(decoded)
+                
+                try:
+                    user_id = decoded.get('user_id')
+                    print(user_id)
+                    data = await db_provider.user.get_access_data_table(user_id)
+                    print(data)
+                except Exception as e:
+                    print(e)
+                    return False
+                
             except jwt.exceptions.InvalidSignatureError:
                 print("Not valid token")
                 return False
@@ -70,7 +78,7 @@ class AuthView(web.View):
         
 
     async def get(self):
-        if self.valid_token():
+        if await self.valid_token():
             return web.json_response(headers=self.GET, status=200)  # redirect to home
         else:
             return web.json_response(headers=self.OPTIONS, status=404)
@@ -78,17 +86,26 @@ class AuthView(web.View):
 
 
     async def post(self):
-        #get from db data
-        #valid self.request.data login password
+        login = self.request.query.get('login')
+        password = self.request.query.get('password')
+        # check taht pass and login is valid    
+        
+        #only for test
+        try:
+            user_id = await db_provider.user.get_user_id(login) 
+        except:
+            await db_provider.user.add_user(login, password)
+            user_id = await db_provider.user.get_user_id(login)
+
 
         ATpayload = {
-            'user_id': 1,
+            'user_id': user_id,
             'exp': datetime.utcnow() +
             timedelta(minutes=self.JWT_CONF['exp_asses'])
         }
 
         RTpayload = {
-            'user_id': 1,
+            'user_id': user_id,
             'exp': datetime.utcnow() +
                 timedelta(minutes=self.JWT_CONF['exp_refresh'])
         }
@@ -96,10 +113,13 @@ class AuthView(web.View):
         jwt_token = jwt.encode(ATpayload, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
         refresh_token = jwt.encode(RTpayload, self.JWT_CONF['RTsecret'], self.JWT_CONF['algoritm'])
         
+        await db_provider.user.update_access_data_table(user_id, 1, refresh_token)
+
         value = {
             'AssesToken': jwt_token
         }
         
+
         resp = web.json_response(data=value, headers=self.OPTIONS)
 
 

@@ -46,12 +46,7 @@ function CertainChat() {
 
     return (
       <>
-        {
-                
-                messages.map((message, idx) => {
-                    return <p key={idx} >{ message }</p>
-                })
-            }
+        
         <input type="text" value={ userMessage } onChange={e => handleChange(e)} placeholder='Новое сообщение'></input>
         <button onClick={e =>  submitMessage(e)} >Отправить</button>
 

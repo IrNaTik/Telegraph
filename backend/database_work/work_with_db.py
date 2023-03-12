@@ -7,7 +7,7 @@ __all__ = 'db_provider'
 class BaseDbWorkMixin():
 
     @staticmethod
-    async def add(table_name: str, arguments: dict):
+    async def _add(table_name: str, arguments: dict):
         try:
 
             keys = f'{", ".join([key for key in arguments.keys()])}'
@@ -26,7 +26,7 @@ class BaseDbWorkMixin():
 
 class UserInstance(BaseDbWorkMixin):
     async def add_user(self, login, password):  
-        await BaseDbWorkMixin.add('user', {'login': login, 'password': password})
+        await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
         
 
 
@@ -35,6 +35,7 @@ class UserInstance(BaseDbWorkMixin):
             statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
             user_object = await session.execute(statement)
             user_id = user_object.first().user_id
+
             
         return user_id
     
@@ -50,7 +51,7 @@ class UserInstance(BaseDbWorkMixin):
         user_id = await db_provider.user.get_user_id(user_login)
         async with AsyncSession(engine) as session:
             statement = text(f'''UPDATE user_access_data
-                                 SET last_visit = {last_visit}, refresh_token= {refresh_token}
+                                 SET last_visit = {last_visit}, refresh_token={refresh_token}
                                  WHERE user_id = {user_id};''')
             
             await session.execute(statement)
@@ -59,7 +60,7 @@ class UserInstance(BaseDbWorkMixin):
     async def get_access_data_table(self, user_login):
         user_id = await db_provider.user.get_user_id(user_login)
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT * FROM user WHERE user_id = '{user_id}' """)
+            statement = text(f"""SELECT * FROM user_access_data WHERE user_id = {user_id} """)
             user_object = await session.execute(statement)
             user_data = user_object.first()
 
@@ -77,7 +78,7 @@ class ChatInstance():
             return 'No user with such login'
         
         # Creating Chat_Instance
-        await BaseDbWorkMixin.add('chat_instance', {'user_1': user1_id, 'user_2': user2_id})
+        await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id, 'user_2': user2_id})
 
         # Creating Chat_Messages table
         chat_name = (str(user1_login) + '_' + str(user2_login)).lower()
@@ -87,13 +88,13 @@ class ChatInstance():
         table_name = ('pagination_' + str(user1_login) + '_' + str(user2_login)).lower()
         await create_chat_messages_pagination_table(table_name, metadata, engine)
 
-        await BaseDbWorkMixin.add(table_name, {'user_id': user1_id, 'message_id': 0}) # If message_id = 0 it means that it is last message
-        await BaseDbWorkMixin.add(table_name, {'user_id': user2_id, 'message_id': 0})
+        await BaseDbWorkMixin._add(table_name, {'user_id': user1_id, 'message_id': 0}) # If message_id = 0 it means that it is last message
+        await BaseDbWorkMixin._add(table_name, {'user_id': user2_id, 'message_id': 0})
 
 
     async def add_message(self, table_name, sender_login, content):
         sender_id = await db_provider.user.get_user_id(sender_login)
-        await BaseDbWorkMixin.add(table_name, {'sender_id': sender_id, 'content': content})
+        await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id, 'content': content})
         
     async def get_user_chats(self, user_login):
         user_id = await db_provider.user.get_user_id(user_login)
