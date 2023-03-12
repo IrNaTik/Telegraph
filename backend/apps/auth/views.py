@@ -98,6 +98,7 @@ class AuthView(web.View):
             user_id = await db_provider.user.get_user_id(login)
 
 
+
         ATpayload = {
             'user_id': user_id,
             'exp': datetime.utcnow() +
@@ -113,7 +114,7 @@ class AuthView(web.View):
         jwt_token = jwt.encode(ATpayload, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
         refresh_token = jwt.encode(RTpayload, self.JWT_CONF['RTsecret'], self.JWT_CONF['algoritm'])
         
-        await db_provider.user.update_access_data_table(user_id, 1, refresh_token)
+        await db_provider.user.update_access_data_table(login, 1, refresh_token)
 
         value = {
             'AssesToken': jwt_token

@@ -52,8 +52,11 @@ async def async_main() -> None:
     #         print(arr[0].login)
     #         print(objects , datetime.now() - start_time)
 
+   
+
+    b = await db_provider.user.get_user_id('Ignat')
     a = await db_provider.user.get_by_prefix('Titan')
-    print(a,  datetime.now() - start_time)
+    print(b, a,  datetime.now() - start_time)
             
     
     
