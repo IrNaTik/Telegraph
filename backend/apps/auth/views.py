@@ -16,7 +16,6 @@ class AuthView(web.View):
     def __init__(self, request: web.Request) -> None:
 
         self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000',
-                    'Access-Control-Expose-Headers': '*', 
                     'Access-Control-Allow-Credentials': 'true'}
         self.POST = {
             
@@ -27,7 +26,7 @@ class AuthView(web.View):
             'Allow': 'OPTIONS, GET, POST',
             'Access-Control-Request-Method': 'POST',
             'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-            'Access-Control-Allow-Headers': '''Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, AssessToken'''
+            'Access-Control-Allow-Headers': '''Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization'''
         }
     
         with open('config/jwt.yaml') as f:
@@ -35,45 +34,46 @@ class AuthView(web.View):
 
         super().__init__(request)
 
-    async def get(self):
-        # await db_provider.create_tables()
-        # user = await db_provider.add_user('JustGimli', 'rhiu3h2ikjvas')
-        # print(user)
+    def valid_token(self):
         
-        asess_token = self.request.headers['AssessToken']
+        try:
+            asess_token = self.request.headers['Authorization']
+            asess_token = asess_token.split(' ')[1]
 
-        if asess_token:
             try:
                 decoded = jwt.decode(asess_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
-                print('Валидный!!!!!')
-            except:
-                print('Просрочен!!!!!!')
-                decoded = False
-
-        if decoded:
-            return web.json_response(headers=self.GET, status=200)
-        
-        # На этом этапе у нас не валидный assess token и мы работаем с refresh token (и по необходимости создаём новый assess)
-
-        cookies = self.request.headers['Cookie']
-        refr = cookies[cookies.find('Ref')+4:]
-
-        try:
-            jwt.decode(ref_token, self.JWT_CONF['RTsecret'], algorithms=["HS256"]) # if user_exists(): # Work with database
-            return True
-        except jwt.ExpiredSignatureError:
-            return False # Required to enter login with passwordу
+                print(decoded)
+            except jwt.exceptions.InvalidSignatureError:
+                print("Not valid token")
+                return False
+            except jwt.exceptions.ExpiredSignatureError:
+                    print("exp time")
+                    try:
+                        cookies = self.request.headers['Cookie']
+                        refr = cookies[cookies.find('Ref')+4:]
+                    except KeyError:
+                        return False
+                    
+                    try:
+                        jwt.decode(refr, self.JWT_CONF['RTsecret'], algorithms=["HS256"]) # if user_exists(): # Work with database
+                        return True
+                    except jwt.ExpiredSignatureError:
+                        return False # Required to enter login with passwordу
+                    except jwt.InvalidSignatureError:
+                        return False
             
+            if decoded:
+                return True      
+        except KeyError:
+            print('key error')
+            return False
+        
 
     async def get(self):
-        # try:
         if self.valid_token():
             return web.json_response(headers=self.GET, status=200)  # redirect to home
         else:
-            return web.json_response(headers=self.GET, status=200)
-        # except:
-            # print("Eroor") # raise error
-
+            return web.json_response(headers=self.OPTIONS, status=404)
         
 
 
@@ -81,7 +81,6 @@ class AuthView(web.View):
         #get from db data
         #valid self.request.data login password
 
-        
         ATpayload = {
             'user_id': 1,
             'exp': datetime.utcnow() +

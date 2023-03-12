@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
+
 
 import './App.scss';
 
@@ -19,7 +20,7 @@ function App() {
         <Route path='/login' element={<Auth/>}></Route>
         <Route path='/chat' element={<Chat/>}></Route>
         <Route path='/media-chat' element={<MediaChat/>}></Route>
-        <Route path='chats' element={<Home/>}></Route>
+        <Route path='/' element={<Home/>}></Route>
         <Route path='/chat/:chatId' element={<CertainChat    />}></Route>  
         </Routes>
     </BrowserRouter>

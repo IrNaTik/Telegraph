@@ -1,26 +1,38 @@
 from database import  metadata, engine, create_chat_messages_table, create_chat_messages_pagination_table, create_user_photos_table
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
+from sqlalchemy import exc
 
 __all__ = 'db_provider'
 class BaseDbWorkMixin():
 
     @staticmethod
     async def add(table_name: str, arguments: dict):
-        keys = f'{", ".join([key for key in arguments.keys()])}'
+        try:
+            print(arguments)
+            keys = f'{", ".join([key for key in arguments.keys()])}'
 
-        values = [arguments[key] if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
-        values = ', '.join(values)
-        async with AsyncSession(engine) as session:
-            statement = text(f"""INSERT INTO user({keys}) VALUES({values})""")
-            await session.execute(statement)
-            await session.commit()
-    
+            values = [str(arguments[key]) if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
+            print(values)
+            values = ', '.join(values)
+
+            async with AsyncSession(engine) as session:
+                
+                statement = text(f"""INSERT INTO {table_name}({keys}) VALUES({values})""")
+                await session.execute(statement)
+                await session.commit()
+        except exc.IntegrityError:
+            print("user is exists")        
+
 
 class UserInstance(BaseDbWorkMixin):
-    async def add_user(self, login, password):
+    async def add_user(self, login, password):  
         await BaseDbWorkMixin.add('user', {'login': login, 'password': password})
-    
+        user_id = await db_provider.user.get_user_id(login)
+        await BaseDbWorkMixin.add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
+        await BaseDbWorkMixin.add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
+
+
     async def get_user_id(self, login):
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
@@ -55,6 +67,13 @@ class UserInstance(BaseDbWorkMixin):
             user_data = user_object.first()
 
         return user_data # Have keys refresh_token and last_visit
+    
+    async def get_by_prefix(self, prefix):
+        async with AsyncSession(engine) as session:
+            statement = text(f"""SELECT * FROM user_parametres WHERE username LIKE '{prefix}%' LIMIT 10""")
+            objects = await session.execute(statement)
+            objects = objects.all()
+            return objects
 
 
 class ChatInstance():

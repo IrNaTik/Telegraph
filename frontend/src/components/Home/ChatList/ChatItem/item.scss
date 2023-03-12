@@ -1,7 +1,23 @@
+@import '../../../../common/common.scss';
+
 .Citem-Wrapper {
+    cursor: pointer;
     display: flex;
     flex-direction: row;
-    align-items: start;
+    align-items: center;
 
+    .Citem-TextBox {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .Citem-Title {
+        flex-wrap: wrap;
+        display: flex;
+        align-content: space-around;
+    }
     
+    &:hover {
+        background: $hover-color;
+    }
 }

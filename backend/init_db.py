@@ -24,8 +24,8 @@ async def async_main() -> None:
     
     alphabet = list(string.ascii_lowercase)
 
-    user_id = await db_provider.user.get_user_id('500000')
-    print(user_id , datetime.now() - start_time)
+    # user_id = await db_provider.user.get_user_id('500000')
+    # print(user_id , datetime.now() - start_time)
     
     # async with AsyncSession(engine) as session:
     #         for i in range(70001, 1000000):
@@ -35,8 +35,28 @@ async def async_main() -> None:
             
     #         
     #         await session.commit()
+
+    # prefix = '9'
+    # async with AsyncSession(engine) as session:
+           
+          
+    #         statement = text(f"""SELECT * FROM user WHERE login LIKE '{prefix}%' LIMIT 10""")
+    #         objects = await session.execute(statement)
+
+    #         arr = []
+    #         for row in objects:
+
+    #             arr.append(row)
+
+    #         print(arr)
+    #         print(arr[0].login)
+    #         print(objects , datetime.now() - start_time)
+
+    a = await db_provider.user.get_by_prefix('Titan')
+    print(a,  datetime.now() - start_time)
+            
     
-        
+    
 
 
 asyncio.run(async_main())
