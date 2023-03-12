@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
 
 
@@ -12,17 +12,22 @@ import CertainChat from './components/Chat/CertainChat';
 import MediaChat from './components/MediaChat/Chat';
 
 function App() {
-  
+  const [username, setUsername] = useState('')
 
   return (
     <BrowserRouter>
         <Routes>
         <Route path='/login' element={<Auth/>}></Route>
-        <Route path='/chat' element={<Chat/>}></Route>
-        <Route path='/media-chat' element={<MediaChat/>}></Route>
+        {/* <Route path='/chat' element={<Chat/>}></Route>
+        <Route path='/media-chat' element={<MediaChat/>}></Route> */}
         <Route path='/' element={<Home/>}></Route>
+
+        <Route path='/:username' 
+          element={<Home props={username}/>}></Route>
         <Route path='/chat/:chatId' element={<CertainChat    />}></Route>  
         </Routes>
+
+        
     </BrowserRouter>
   );
 }

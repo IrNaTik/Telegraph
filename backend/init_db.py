@@ -27,14 +27,8 @@ async def async_main() -> None:
     # user_id = await db_provider.user.get_user_id('500000')
     # print(user_id , datetime.now() - start_time)
     
-    # async with AsyncSession(engine) as session:
-    #         for i in range(70001, 1000000):
-          
-    #             statement = text(f"""INSERT INTO user(login, password) VALUES('{i}', '{i}')""")
-    #             await session.execute(statement)
-            
-    #         
-    #         await session.commit()
+    for i in range(1000):
+        await db_provider.user.add_user(str(i), str(i))
 
     # prefix = '9'
     # async with AsyncSession(engine) as session:
@@ -52,8 +46,8 @@ async def async_main() -> None:
     #         print(arr[0].login)
     #         print(objects , datetime.now() - start_time)
 
-    a = await db_provider.user.get_by_prefix('Titan')
-    print(a,  datetime.now() - start_time)
+    # a = await db_provider.user.get_by_prefix('Titan')
+    # print(a,  datetime.now() - start_time)
             
     
     
