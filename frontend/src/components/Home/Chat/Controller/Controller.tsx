@@ -13,15 +13,16 @@ export function Controller(props:any) {
     const { sendJsonMessage } = useWebSocket(decodeURI(WS_URL), {
         onOpen: () => {
 
-          const chatId = window.location.pathname.split('/').pop()
-          sendJsonMessage({
+        //   const chatId = window.location.pathname.split('/').pop()
+        const chatId = 1   
+        sendJsonMessage({
             'type': 'chatId',
             'chatId': chatId
           })    
         },
         onMessage: (response) => {
           const data = JSON.parse(response.data) 
-
+          console.log(data)  
           if (data.type === "message"){
             setMessages([...message, data.message])
           }
@@ -47,6 +48,12 @@ export function Controller(props:any) {
 
     return (
         <div className="ConrollerIns">
+            {/* {
+                
+                message.map((message, idx) => {
+                    return <p key={idx} >{ message }</p>
+                })
+            } */}
             <div className="Input-Controller">
                 <textarea value={userMessage} 
                 onChange={e=> handleChange(e)} autoCorrect="on"  autoFocus={true} rows={4} placeholder="Message" className="TextArea-Controller"></textarea>

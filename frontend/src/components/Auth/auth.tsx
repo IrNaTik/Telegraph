@@ -19,7 +19,8 @@ export default function Auth(props: any) {
         }).then((responce) => {
             console.log(responce.status)
             if (responce.status === 200) {
-                navigate('/')
+                // navigate('/')
+                console.log('register')
             }
         })
     },[])

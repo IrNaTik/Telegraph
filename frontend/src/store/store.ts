@@ -15,9 +15,11 @@ import {
 import storage from "redux-persist/lib/storage";
 
 import tokenSlice from "./tokens";
+import MessageSlice from "./messsages";
 
 const rootReducer = combineReducers({
-    TokenStore: tokenSlice.reducer
+    TokenStore: tokenSlice.reducer,
+    MessageStore: MessageSlice.reducer
 })
 
 const persistConfig = {
