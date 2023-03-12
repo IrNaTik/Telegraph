@@ -37,8 +37,8 @@ class UserInstance(BaseDbWorkMixin):
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
             user_object = await session.execute(statement)
+            
             user_id = user_object.first().user_id
-
             
         return user_id
     
@@ -52,16 +52,17 @@ class UserInstance(BaseDbWorkMixin):
 
     async def update_access_data_table(self, user_login, last_visit, refresh_token):
         user_id = await db_provider.user.get_user_id(user_login)
+        print(user_id, last_visit, refresh_token)
         async with AsyncSession(engine) as session:
             statement = text(f'''UPDATE user_access_data
-                                 SET last_visit = {last_visit}, refresh_token={refresh_token}
+                                 SET last_visit = '{last_visit}', refresh_token='{refresh_token}'
                                  WHERE user_id = {user_id};''')
             
             await session.execute(statement)
             await session.commit() 
         
-    async def get_access_data_table(self, user_login):
-        user_id = await db_provider.user.get_user_id(user_login)
+    async def get_access_data_table(self, user_id):
+        # user_id = await db_provider.user.get_user_id(user_login)
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user_access_data WHERE user_id = {user_id} """)
             user_object = await session.execute(statement)

@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import {AiOutlineSend} from 'react-icons/ai'
 import useWebSocket from 'react-use-websocket'
 
-export function Controller(props:any) {
+import MessageSlice from "src/store/messsages";
+import { useAppDispatch } from "src/store/store";
 
-    const [message, setMessages] = useState<Array<String>>([])
+export function Controller(props:any) {
+    const dispatch = useAppDispatch()
+    // const [message, setMessages] = useState<Array<String>>([])
     const [userMessage, setUserMessage] = useState('')
     
     const WS_URL = 'ws://localhost:8000/ws/chat/' // Подключение к сокету
@@ -24,7 +27,7 @@ export function Controller(props:any) {
           const data = JSON.parse(response.data) 
           console.log(data)  
           if (data.type === "message"){
-            setMessages([...message, data.message])
+            dispatch(MessageSlice.actions.add(data.message))
           }
           
         }
@@ -48,12 +51,6 @@ export function Controller(props:any) {
 
     return (
         <div className="ConrollerIns">
-            {/* {
-                
-                message.map((message, idx) => {
-                    return <p key={idx} >{ message }</p>
-                })
-            } */}
             <div className="Input-Controller">
                 <textarea value={userMessage} 
                 onChange={e=> handleChange(e)} autoCorrect="on"  autoFocus={true} rows={4} placeholder="Message" className="TextArea-Controller"></textarea>

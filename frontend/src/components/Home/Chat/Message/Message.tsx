@@ -2,6 +2,7 @@ import React from "react";
 
 interface IProp {
     isSender?: boolean;
+    content: string | number
 }
 
 enum Style {
@@ -11,17 +12,15 @@ enum Style {
 
 }
 
-export function Message({isSender=false}:IProp) {
+export function Message({isSender=false, content}:IProp) {
      
 
     return (
         <div className="Message" style={{
             'alignSelf': isSender? Style.sender: Style.receiver
-        }
-            
+        }   
         }>
-            <div className="Message-Content">contents test</div>
-
+            <div className="Message-Content">{content}</div>
         </div>
     ) // add svg
 } 
