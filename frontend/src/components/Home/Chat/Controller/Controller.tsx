@@ -51,12 +51,6 @@ export function Controller(props:any) {
 
     return (
         <div className="ConrollerIns">
-            {/* {
-                
-                message.map((message, idx) => {
-                    return <p key={idx} >{ message }</p>
-                })
-            } */}
             <div className="Input-Controller">
                 <textarea value={userMessage} 
                 onChange={e=> handleChange(e)} autoCorrect="on"  autoFocus={true} rows={4} placeholder="Message" className="TextArea-Controller"></textarea>

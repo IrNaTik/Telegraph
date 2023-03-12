@@ -18,11 +18,9 @@ export function Message({isSender=false, content}:IProp) {
     return (
         <div className="Message" style={{
             'alignSelf': isSender? Style.sender: Style.receiver
-        }
-            
+        }   
         }>
             <div className="Message-Content">{content}</div>
-
         </div>
     ) // add svg
 } 

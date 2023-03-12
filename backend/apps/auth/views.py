@@ -56,7 +56,7 @@ class AuthView(web.View):
                 return False
             except jwt.exceptions.ExpiredSignatureError:
                     print("exp time")
-                    try:
+                    try:       
                         cookies = self.request.headers['Cookie']
                         refr = cookies[cookies.find('Ref')+4:]
                     except KeyError:

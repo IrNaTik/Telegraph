@@ -4,7 +4,7 @@ import { Controller } from "./Controller/Controller";
 import { useAppSelector } from "src/store/store";
 
 export function ChatIns(props: any) {
-    const messageList = useAppSelector(state=> state.MessageStore.messages)
+    const messageList = useAppSelector(state => state.MessageStore.messages)
 
     useEffect(() => {
         console.log(messageList.length)
@@ -13,7 +13,7 @@ export function ChatIns(props: any) {
     return (
         <>
         <div className="ChatIns">
-            {messageList.length > 0 ? messageList.map(str => <Message content={str}/>) : null} 
+            {messageList.length > 0 ? messageList.map(str => <Message  content={str}/>) : null} 
         </div>
         <Controller/>
         </>
