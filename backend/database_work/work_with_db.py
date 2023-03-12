@@ -9,15 +9,16 @@ class BaseDbWorkMixin():
     @staticmethod
     async def _add(table_name: str, arguments: dict):
         try:
-
+            print(arguments)
             keys = f'{", ".join([key for key in arguments.keys()])}'
 
-            values = [arguments[key] if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
+            values = [str(arguments[key]) if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
+            print(values)
             values = ', '.join(values)
 
             async with AsyncSession(engine) as session:
                 
-                statement = text(f"""INSERT INTO user({keys}) VALUES({values})""")
+                statement = text(f"""INSERT INTO {table_name}({keys}) VALUES({values})""")
                 await session.execute(statement)
                 await session.commit()
         except exc.IntegrityError:
@@ -26,8 +27,10 @@ class BaseDbWorkMixin():
 
 class UserInstance(BaseDbWorkMixin):
     async def add_user(self, login, password):  
-        await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
-        
+        await BaseDbWorkMixin.add('user', {'login': login, 'password': password})
+        user_id = await db_provider.user.get_user_id(login)
+        await BaseDbWorkMixin.add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
+        await BaseDbWorkMixin.add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
 
 
     async def get_user_id(self, login):
@@ -65,6 +68,13 @@ class UserInstance(BaseDbWorkMixin):
             user_data = user_object.first()
 
         return user_data # Have keys refresh_token and last_visit
+    
+    async def get_by_prefix(self, prefix):
+        async with AsyncSession(engine) as session:
+            statement = text(f"""SELECT * FROM user_parametres WHERE username LIKE '{prefix}%' LIMIT 10""")
+            objects = await session.execute(statement)
+            objects = objects.all()
+            return objects
 
 
 class ChatInstance():
