@@ -9,20 +9,18 @@ class BaseDbWorkMixin():
     @staticmethod
     async def _add(table_name: str, arguments: dict):
         try:
-            print(arguments)
             keys = f'{", ".join([key for key in arguments.keys()])}'
 
             values = [str(arguments[key]) if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
-            print(values)
             values = ', '.join(values)
 
             async with AsyncSession(engine) as session:
-                
                 statement = text(f"""INSERT INTO {table_name}({keys}) VALUES({values})""")
                 await session.execute(statement)
                 await session.commit()
+
         except exc.IntegrityError:
-            print("user is exists")        
+            print("user is exists in table")        
 
 
 class UserInstance(BaseDbWorkMixin):
@@ -121,7 +119,6 @@ class ChatInstance():
         return user_chats # Объекты чатов
     
     async def get_chat_messages(self, table_name, message_id): # Возвращает 25 сообщений, начиная с определённого
-        print(metadata)
         async with engine.connect() as con:
 
             statement = text(f'''SELECT user_id from user ORDER BY user_id DESC
@@ -135,11 +132,7 @@ class ChatInstance():
             
             user_objects = await con.execute(statement)
             users = user_objects.all()
-            # print(users)
-            
-            # messages = []
-            # for row in message_objects:
-            #     messages.append(row)
+
         return users
 
 class WorkWithDatabase():

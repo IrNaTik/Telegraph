@@ -28,7 +28,6 @@ async def websocket_chat(request): # request это что-то по типу sc
             data = json.loads(msg.data)
 
             msg_type = data.get('type', None)
-            print(msg_type) 
             
             if msg_type:
 
