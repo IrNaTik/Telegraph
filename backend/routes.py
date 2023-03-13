@@ -1,6 +1,6 @@
-from apps.auth.routes import urlpatterns as auth_routes
-from apps.chats.routes import urlpatterns as chats_routes
-from apps.search.routes import urlpatterns as search_routes
+from apps.v1.auth.routes import urlpatterns as auth_routes
+from apps.v1.chats.routes import urlpatterns as chats_routes
+from apps.v1.search.routes import urlpatterns as search_routes
 
 
 

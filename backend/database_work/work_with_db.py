@@ -52,7 +52,7 @@ class UserInstance(BaseDbWorkMixin):
 
     async def update_access_data_table(self, user_login, last_visit, refresh_token):
         user_id = await db_provider.user.get_user_id(user_login)
-        print(user_id, last_visit, refresh_token)
+
         async with AsyncSession(engine) as session:
             statement = text(f'''UPDATE user_access_data
                                  SET last_visit = '{last_visit}', refresh_token='{refresh_token}'
@@ -62,7 +62,7 @@ class UserInstance(BaseDbWorkMixin):
             await session.commit() 
         
     async def get_access_data_table(self, user_id):
-        # user_id = await db_provider.user.get_user_id(user_login)
+
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user_access_data WHERE user_id = {user_id} """)
             user_object = await session.execute(statement)
@@ -123,10 +123,7 @@ class ChatInstance():
     async def get_chat_messages(self, table_name, message_id): # Возвращает 25 сообщений, начиная с определённого
         print(metadata)
         async with engine.connect() as con:
-            
-            
-            # statement = text(f"""SELECT * FROM {table_name} ORDER BY message_id DESC WHERE message_id >= {} """) # Сделать пагинацию 
-            # statement = text(f"""SELECT * FROM {table_name}""") 
+
             statement = text(f'''SELECT user_id from user ORDER BY user_id DESC
                                  LIMIT 25 ;''')
             last_user = await con.execute(statement)

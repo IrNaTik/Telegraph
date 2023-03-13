@@ -13,10 +13,12 @@ export default function Home(props: any) {
     }
 
     return (
+
         <div className="Home-Wrapper">
-            <SearchArea changeHref={ changeHref }/>
+            
             <div className="Home-Clist">
-            <Clist></Clist>
+                <SearchArea changeHref={ changeHref }/>
+                <Clist></Clist>
             </div>
             <div className="Home-ChatIns">
                 <ChatIns />

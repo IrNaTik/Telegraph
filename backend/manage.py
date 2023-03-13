@@ -10,7 +10,7 @@ from routes import urlpatterns
 
 
 
-from apps.auth.middlewares import Token_handler
+from apps.v1.auth.middlewares import Token_handler
 
 def setup_routes(application):
     urlpatterns(application)  

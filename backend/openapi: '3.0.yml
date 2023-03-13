@@ -44,4 +44,23 @@ paths:
                       string
       responses:
         '200':
-            description: Refresh token and assesToken
+            description: Refresh token and assesToken 
+  //users-by-prefix:
+    get:
+      summary: searched user
+      description: searched user 
+      parameters:
+        - name: prefix
+          description: first letters of username
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200': 
+          description: return username 
+          content:
+            application/json:
+              schema:
+                type: string
+                description: username

@@ -7,13 +7,13 @@ export function ChatIns(props: any) {
     const messageList = useAppSelector(state => state.MessageStore.messages)
 
     useEffect(() => {
-        console.log(messageList.length)
+        
     }, [messageList])
 
     return (
         <>
         <div className="ChatIns">
-            {messageList.length > 0 ? messageList.map(str => <Message  content={str}/>) : null} 
+            {messageList.length > 0 ? messageList.map((str, idx) => <Message key={idx}  content={str} isSender={true}/>) : null} 
         </div>
         <Controller/>
         </>
