@@ -90,8 +90,7 @@ class UserInstance(BaseDbWorkMixin):
         return photo_row.error_data
         
 
-    async def update_access_data_table(self, user_login, last_visit, refresh_token):
-        user_id = await db_provider.user.get_user_id(user_login)
+    async def update_access_data_table(self, user_id, last_visit, refresh_token):
 
         async with AsyncSession(engine) as session:
             statement = text(f'''UPDATE user_access_data
@@ -101,13 +100,13 @@ class UserInstance(BaseDbWorkMixin):
             
         
     async def get_access_data_table(self, user_id):
-
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT * FROM user_access_data WHERE user_id = {user_id} """)
+            statement = text(f"""SELECT refresh_token FROM user_access_data WHERE user_id = {user_id} """)
             user_object = await session.execute(statement)
             user_data = user_object.first()
+            
 
-        return user_data # Have keys refresh_token and last_visit
+        return user_data[0] # Have keys refresh_token and last_visit
     
     async def get_by_prefix(self, prefix):
         async with AsyncSession(engine) as session:

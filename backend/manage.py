@@ -6,7 +6,7 @@ import aiohttp_debugtoolbar  #debug
 from apps.settings import config
 from routes import urlpatterns
 
-from apps.v1.middlewares import Token
+from apps.v1.middlewares import Middleware
 
 
 
@@ -21,8 +21,10 @@ def setup_routes(application):
     #     print(rout)
     
 def setup_middlewares(app):
-    token = Token()
-    app.middlewares.append(token.middleware)
+    pass
+    # mdw = Middleware()
+    # app.middlewares.append(mdw.midlleware)
+    
 
 
 def setup_external_libraries(application: web.Application) -> None:

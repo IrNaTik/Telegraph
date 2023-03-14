@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import axios from "src/api/axios";
+import { useAppSelector } from "src/store/store";
 
 
 interface PropsInterface {
@@ -10,12 +11,15 @@ function SearchArea({ changeHref }: PropsInterface) {
     const [prefix, setPrefix] = useState('')
     const [globalUsers, setGlobalUsers] = useState<Array<string>>([])
     const [navigate, setNavigate] = useState<any>()
+    const Atoken = useAppSelector(state => state.TokenStore.Atoken)
 
     useEffect(()=> {
         if (prefix.length >= 4) {
+
             axios.get('users-by-prefix', {
                 'headers': {
-                    'prefix': prefix
+                    'Authorization': `Bearer ${Atoken}`,
+                    'prefix': prefix,
                 }})
                     .then(function (response) {
                         console.log(response)

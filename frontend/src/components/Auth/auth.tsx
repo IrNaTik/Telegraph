@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Navigate, useNavigate } from "react-router";
+import {  useNavigate } from "react-router";
 
 import Form from "./form/form";
 import { useAppSelector } from 'src/store/store';

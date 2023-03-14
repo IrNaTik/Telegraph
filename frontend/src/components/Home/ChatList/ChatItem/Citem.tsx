@@ -6,15 +6,12 @@ export function Citem(props: any) {
         <div className="Citem-Wrapper">
             <Logo r={25} size={80}></Logo>
             <div className="Citem-TextBox">
-                
                 <div className="Citem-Title">
                     <div className="Citem-Name">Title</div>
                     <div className="Citem-LstMes">01.09</div>
                 </div>
-
                 <div className="Citem-Descr">Description</div>
-            </div>
-            
+            </div>      
         </div>
     ) 
 }
