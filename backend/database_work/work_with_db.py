@@ -60,7 +60,6 @@ class UserInstance(BaseDbWorkMixin):
             await session.commit() 
         
     async def get_access_data_table(self, user_id):
-
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user_access_data WHERE user_id = {user_id} """)
             user_object = await session.execute(statement)

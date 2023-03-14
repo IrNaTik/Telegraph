@@ -100,7 +100,7 @@ class AuthView(web.View):
         ATpayload = {
             'user_id': user_id,
             'exp': datetime.utcnow() +
-            timedelta(minutes=self.JWT_CONF['exp_asses'])
+            timedelta(seconds=self.JWT_CONF['exp_asses'])
         }
 
         RTpayload = {

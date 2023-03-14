@@ -22,8 +22,8 @@ class UsernameSearching(web.View):
             'Allow': 'OPTIONS, GET, POST',
             'Access-Control-Request-Method': 'POST',
             'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-            'Access-Control-Allow-Headers': '''Content-Type, prefix''',
-            'Access-Control-Request-Headers': '''prefix'''
+            'Access-Control-Allow-Headers': '''Content-Type, prefix, Authorization''',
+            'Access-Control-Request-Headers': '''prefix, Authorization'''
         }
         super().__init__(request)
 
