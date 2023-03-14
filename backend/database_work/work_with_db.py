@@ -2,6 +2,7 @@ from database import  metadata, engine, create_chat_messages_table, create_chat_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 from sqlalchemy import exc
+from .serializers import *
 
 __all__ = 'db_provider'
 class BaseDbWorkMixin():
@@ -9,38 +10,67 @@ class BaseDbWorkMixin():
     @staticmethod
     async def _add(table_name: str, arguments: dict):
         try:
-            print(arguments)
             keys = f'{", ".join([key for key in arguments.keys()])}'
 
             values = [str(arguments[key]) if type(arguments[key]) == int else f"'{arguments[key]}'" for key in arguments.keys()]
-            print(values)
             values = ', '.join(values)
 
             async with AsyncSession(engine) as session:
-                
                 statement = text(f"""INSERT INTO {table_name}({keys}) VALUES({values})""")
                 await session.execute(statement)
                 await session.commit()
+
+            return {'error': False}
         except exc.IntegrityError:
-            print("user is exists")        
+            return {'error': True, 'type': 'IntegrityError', 'message': 'Row with thids parametres exists(but must be unique)'}   
+        except Exception as e:
+            return {'error': True, 'type': f'{type(e)}', 'message': 'No message'}   
+
+    @staticmethod
+    async def _execute_statement(statement, session):
+        try:    
+            await session.execute(statement)
+            await session.commit() 
+            return {'error': False}
+        except exc.IntegrityError:
+            return {'error': True, 'type': 'IntegrityError', 'message': 'Row with thids parametres exists(but must be unique)'}   
+        except exc.OperationalError:
+            return {'error': True, 'type': 'OperationalError', 'message': 'No such table'}   
+        except Exception as e:
+            print('123444')
+            return {'error': True, 'type': f'{type(e)}', 'message': 'No message'}   
 
 
 class UserInstance(BaseDbWorkMixin):
     async def add_user(self, login, password):  
-        await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
-        user_id = await db_provider.user.get_user_id(login)
-        await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
-        await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
+        new_user = UserSerializer(login, password)
+
+        if new_user.is_valid:
+            user = await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
+
+            if not user['error']: 
+                user_id = await db_provider.user.get_user_id(login)
+                await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
+                await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
+            else:
+                return user
+            
+        return new_user.error_data
+        
 
 
     async def get_user_id(self, login):
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
-            user_object = await session.execute(statement)
+            try:
+                statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
+                user_object = await session.execute(statement)
+                
+                user_id = user_object.first().user_id
+                return {'error': False, 'user_id': user_id}
+            except AttributeError:
+                return {'error': True, 'type': 'AttributeArror', 'message': 'No user with such login'}
             
-            user_id = user_object.first().user_id
-            
-        return user_id
+        
     
     async def create_photos_table(self, user_login):
         table_name = (str(user_login) + '_' +'photos').lower()
@@ -48,21 +78,30 @@ class UserInstance(BaseDbWorkMixin):
 
     async def add_photo(self, user_login, photo_path):
         table_name = (str(user_login) + '_' + 'photos').lower()
-        await BaseDbWorkMixin._add(table_name, {'photo_path': photo_path})
+    
+        photo_row = PhotoSerializer(photo_path) # Нужно редачить
+        
+        if photo_row.is_valid:
+            new_photo = await BaseDbWorkMixin._add(table_name, {'photo_path': photo_path})
+
+            if new_photo['error']: 
+                return new_photo
+            
+        return photo_row.error_data
+        
 
     async def update_access_data_table(self, user_login, last_visit, refresh_token):
         user_id = await db_provider.user.get_user_id(user_login)
-        print(user_id, last_visit, refresh_token)
+
         async with AsyncSession(engine) as session:
             statement = text(f'''UPDATE user_access_data
                                  SET last_visit = '{last_visit}', refresh_token='{refresh_token}'
                                  WHERE user_id = {user_id};''')
+            return self._execute_statement(statement, session)
             
-            await session.execute(statement)
-            await session.commit() 
         
     async def get_access_data_table(self, user_id):
-        # user_id = await db_provider.user.get_user_id(user_login)
+
         async with AsyncSession(engine) as session:
             statement = text(f"""SELECT * FROM user_access_data WHERE user_id = {user_id} """)
             user_object = await session.execute(statement)
@@ -121,7 +160,6 @@ class ChatInstance():
         return user_chats # Объекты чатов
     
     async def get_chat_messages(self, table_name, message_id): # Возвращает 25 сообщений, начиная с определённого
-        print(metadata)
         async with engine.connect() as con:
             
             statement = text(f'''SELECT user_id from user ORDER BY user_id DESC
@@ -135,11 +173,7 @@ class ChatInstance():
             
             user_objects = await con.execute(statement)
             users = user_objects.all()
-            # print(users)
-            
-            # messages = []
-            # for row in message_objects:
-            #     messages.append(row)
+
         return users
 
 class WorkWithDatabase():

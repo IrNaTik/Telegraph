@@ -49,9 +49,11 @@ async def async_main() -> None:
     # a = await db_provider.user.get_by_prefix('Titan')
     # print(a,  datetime.now() - start_time)
 
-    c = await db_provider.chat.get_chat_messages('', 1000)
+    # c = await db_provider.chat.get_chat_messages('', 1000)
     
-    print(c, datetime.now() - start_time )
+    # c = await db_provider.user.add_user('Igantio', 'fjfvfvgfd')
+    c = await db_provider.user.add_photo('kmlfksljdfdnl', 'fjdshfsjdhfdsjhfdkjs')
+    print(c, datetime.now() - start_time)
             
     
     

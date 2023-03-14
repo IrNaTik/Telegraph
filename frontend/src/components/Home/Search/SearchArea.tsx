@@ -1,7 +1,6 @@
-import { set } from "immer/dist/internal";
 import React, { useState, useEffect, memo } from "react";
 import axios from "src/api/axios";
-import { Navigate } from "react-router";
+
 
 interface PropsInterface {
     changeHref: Function
@@ -32,7 +31,6 @@ function SearchArea({ changeHref }: PropsInterface) {
     }
 
     function openChat( idx: number){
-        console.log(globalUsers[idx])
         changeHref(globalUsers[idx])
         // setNavigate( <Navigate to={"/" + globalUsers[idx]} replace={false} />)
     }

@@ -1,14 +1,11 @@
 @import '../../../../common/common.scss';
 
 .ConrollerIns {
-    margin: 0 auto;
-    position: relative;
-
+    grid-area: controller;
     .Input-Controller {
-        margin: 0 25%;
+        
         display: flex;
         align-items: center;
-        justify-content: space-around;
 
         .TextArea-Controller {
             resize: none;

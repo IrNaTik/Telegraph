@@ -25,7 +25,7 @@ export function Controller(props:any) {
         },
         onMessage: (response) => {
           const data = JSON.parse(response.data) 
-          console.log(data)  
+          
           if (data.type === "message"){
             dispatch(MessageSlice.actions.add(data.message))
           }
@@ -33,7 +33,7 @@ export function Controller(props:any) {
         }
       });
 
-    function submitMessage(e: any){
+    function submitMessage(){
         // const chatId= window.location.pathname.split('/').pop()
         const chatId = 1
         sendJsonMessage({
@@ -44,8 +44,15 @@ export function Controller(props:any) {
         setUserMessage('')
     }
 
-    function handleChange(e: any) {
+    function handleChange(e: any) {        
         setUserMessage(e.target.value)
+    }
+
+    function handleKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+        if (e.code === 'Enter' || e.code === "NumpadEnter" ) {
+            e.preventDefault()
+            submitMessage()
+        }
     }
 
 
@@ -53,8 +60,8 @@ export function Controller(props:any) {
         <div className="ConrollerIns">
             <div className="Input-Controller">
                 <textarea value={userMessage} 
-                onChange={e=> handleChange(e)} autoCorrect="on"  autoFocus={true} rows={4} placeholder="Message" className="TextArea-Controller"></textarea>
-                <AiOutlineSend className="Send-Button" onClick={e => submitMessage(e)} />
+                onChange={e=> handleChange(e)} autoCorrect="on"  autoFocus={true} rows={4} placeholder="Message" className="TextArea-Controller" onKeyDown={e => handleKey(e)}></textarea>
+                <AiOutlineSend className="Send-Button" id="Control-Button" onClick={e => submitMessage()} />
             </div>
         </div>
     )

@@ -3,13 +3,9 @@
 @import '../../../common/common.scss';
 
 .ChatIns {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
     max-width: $--message-container;
-    min-height: 100%;
     padding: 0 0.8125rem;
-
     overflow-y: overlay;
+    grid-area: "content";
 
 } 

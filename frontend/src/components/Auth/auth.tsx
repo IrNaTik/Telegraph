@@ -17,10 +17,8 @@ export default function Auth(props: any) {
                 'Authorization': `Bearer ${Atoken}`
             }
         }).then((responce) => {
-            console.log(responce.status)
             if (responce.status === 200) {
-                // navigate('/')
-                console.log('register')
+                navigate('/')
             }
         })
     },[])

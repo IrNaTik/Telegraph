@@ -44,12 +44,10 @@ class AuthView(web.View):
                 
                 try:
                     user_id = decoded.get('user_id')
-                    print(user_id)
                     data = await db_provider.user.get_access_data_table(user_id)
-                    print(data)
                 except Exception as e:
                     print(e)
-                    return False
+                    return False 
                 
             except jwt.exceptions.InvalidSignatureError:
                 print("Not valid token")
