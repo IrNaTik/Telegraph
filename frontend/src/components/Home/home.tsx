@@ -13,7 +13,6 @@ export default function Home(props: any) {
     }
 
     return (
-
         <div className="Home-Wrapper">
             
             <div className="Home-Clist">
@@ -22,7 +21,6 @@ export default function Home(props: any) {
             </div>
             <div className="Home-ChatIns">
                 <ChatIns />
-
             </div>
             
         </div>

@@ -15,11 +15,11 @@ function SearchArea({ changeHref }: PropsInterface) {
 
     useEffect(()=> {
         if (prefix.length >= 4) {
+
             axios.get('users-by-prefix', {
                 'headers': {
                     'Authorization': `Bearer ${Atoken}`,
-                    'prefix': prefix
-                    
+                    'prefix': prefix,
                 }})
                     .then(function (response) {
                         console.log(response)

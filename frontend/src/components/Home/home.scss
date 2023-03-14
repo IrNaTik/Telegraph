@@ -3,12 +3,13 @@
 @use './Search/searchArea.scss';
 
 
+
 .Home-Wrapper{
     display: grid;
-    grid-template-columns: 25% 75%;
-
+    grid-template-columns: 100%;
+    height: 100%;
     .Home-Clist {
-      
+        height: 100%;
     }   
 
     .Home-ChatIns {
@@ -16,6 +17,6 @@
         grid-template-areas: "content" 
         "controller";
         margin: 0 15%;
-        grid-template-columns: 70% ; 
+        grid-template-columns: 75% ; 
         grid-template-rows: 90% 10%;
-    }}
+}}

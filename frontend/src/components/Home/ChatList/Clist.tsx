@@ -11,8 +11,6 @@ export function Clist(props: any) {
             <Citem/>
             <Citem/>
             <Citem/>
-            <Citem/>
-            <Citem/>
         </>
     )
 }
