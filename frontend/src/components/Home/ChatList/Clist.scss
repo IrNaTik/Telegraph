@@ -1,1 +1,8 @@
 @use './ChatItem/item.scss';
+
+.div-chatlist{
+    max-height: 90vh;
+    overflow: auto;
+    white-space: nowrap;
+    
+}

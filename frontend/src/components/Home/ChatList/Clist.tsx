@@ -3,7 +3,7 @@ import { Citem } from "./ChatItem/Citem";
 
 export function Clist(props: any) {
     return(
-        <>
+        <div className="div-chatlist">
             <Citem/>
             <Citem/>
             <Citem/>
@@ -11,6 +11,16 @@ export function Clist(props: any) {
             <Citem/>
             <Citem/>
             <Citem/>
-        </>
+            <Citem/>
+            <Citem/>
+            <Citem/>
+            <Citem/>
+            <Citem/>
+            <Citem/>    
+            <Citem/>
+            <Citem/>
+            <Citem/>
+            <Citem/>  
+        </div>
     )
 }

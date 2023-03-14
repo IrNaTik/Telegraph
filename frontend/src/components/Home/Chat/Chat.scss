@@ -4,8 +4,11 @@
 
 .ChatIns {
     max-width: $--message-container;
-    padding: 0 0.8125rem;
-    overflow-y: overlay;
-    grid-area: "content";
+    // padding: 0 0.8125rem;
+    // overflow-y: overlay;
+    // grid-area: "content";
+    max-height: 90vh;
+    overflow: auto;
+    white-space: nowrap;
 
 } 
