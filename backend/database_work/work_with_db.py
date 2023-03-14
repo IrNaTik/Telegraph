@@ -124,9 +124,6 @@ class ChatInstance():
         print(metadata)
         async with engine.connect() as con:
             
-            
-            # statement = text(f"""SELECT * FROM {table_name} ORDER BY message_id DESC WHERE message_id >= {} """) # Сделать пагинацию 
-            # statement = text(f"""SELECT * FROM {table_name}""") 
             statement = text(f'''SELECT user_id from user ORDER BY user_id DESC
                                  LIMIT 25 ;''')
             last_user = await con.execute(statement)
