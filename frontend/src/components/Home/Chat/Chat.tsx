@@ -7,15 +7,19 @@ export function ChatIns(props: any) {
     const messageList = useAppSelector(state => state.MessageStore.messages)
 
     useEffect(() => {
-        
+        const elem = document.getElementById("Chat-Scroll")
+        elem!.scrollTop = elem!.scrollHeight
     }, [messageList])
 
     return (
         <>
-        <div className="ChatIns">
-            {messageList.length > 0 ? messageList.map((str, idx) => <Message key={idx}  content={str} isSender={true}/>) : null} 
+        <div className="Chat-Scrollable" id="Chat-Scroll">
+            <div className="ChatIns" >
+                {messageList.length > 0 ? messageList.map((str, idx) => <Message key={idx}  content={str} isSender={true}/>) : null} 
+            </div>
         </div>
-        <Controller/>
+            <Controller/>
+       
         </>
     )
 } 
