@@ -32,7 +32,7 @@ class UsernameSearching(web.View):
         users = await db_provider.user.get_by_prefix(prefix)
         logins = [user.login for user in users]
 
-        return web.json_response(data=logins, headers=self.GET, status=200) 
+        return logins, 200 
             
 
     async def options(self):

@@ -3,7 +3,7 @@ import jwt
 from aiohttp import  web
 from yaml import safe_load
 from typing import Callable, Any, Union
-from datetime import datetime, timedelta
+
 
 from database_work.work_with_db import db_provider
 
@@ -11,8 +11,11 @@ class Middleware:
     """
         response_bosy is dict
     """
+    def __init__(self) -> None:
+        self.body = {}
+        self.status = 500
 
-    def get_error_body(self, request: web.Request, error: Exception) -> dict:
+    def get_error_body(self, error: Exception) -> dict:
         return {"error_type": str(type(error)), "error_message": str(error)}
 
 
@@ -25,18 +28,18 @@ class Middleware:
         return await handler(request)
 
 
-    async def get_response_body_and_status(
-        self, request: web.Request, handler: Callable
-    )-> Union[Any, int]:
-        try:   
-            responce_body = await self.run_handler(request, handler)
-            status = 200
-        except Exception as e:
-            status = 400
-            responce_body = f"Error: {e}"
+    # async def get_response_body_and_status(
+    #     self, request: web.Request, handler: Callable
+    # )-> Union[Any, int]:
+    #     try:   
+    #         responce_body = await self.run_handler(request, handler)
+    #         status = 200
+    #     except Exception as e:
+    #         status = 400
+    #         responce_body = f"Error: {e}"
             
-        finally:
-            return responce_body, status
+    #     finally:
+    #         return responce_body, status
 
 
     @web.middleware
@@ -50,32 +53,33 @@ class Middleware:
             return self.run_handler(request, handler)
         else:
             
-            # response_body, status = self.get_response_body_and_status(request, handler)
-            # response, refresh_token = Token(response=response_body)
-            resp = web.Response(body="Asd")
-            resp.body.set_content_disposition('dsa', name='asd')
-            print(resp.body.write())
-            return resp
-            # return resp
-            #  if refresh_token == '':
+            # response_body, status = self.get_response_body_and_status(request=request, handler=handler)
+            try:
+                # user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
+                # print(user_id)
 
-            # else:
-            #     resp = web.Response(body=response_body)
-            #     resp.set_cookie(name="Ref", value=refresh_token, httponly=True ,
-            #             max_age=self.JWT_CONF['exp_refresh'] * 60)
+                self.body, self.status = await handler(request)
+            except HandlerStatusError as hs:
 
+                if hs == 401:
+                    self.status = 401
+                    self.body = self.get_error_body(HandlerStatusError)
+                elif hs == 404:
+                    self.status = 401
+                    self.body = self.get_error_body(HandlerStatusError)
+            
+            except Exception as e:
+                self.status = 500
+                self.body = self.get_error_body(Exception)
+                print(e)
 
-
-
-
-
+            finally:
+                return web.json_response(data=self.body, status=self.status)
 
 
 class Token:
 
-    def __init__(self, response, status: int) -> None:
-        self.resp = web.Response(bosy=response, status=status)
-
+    def __init__(self) -> None:
         with open('config/jwt.yaml') as f:
             self.JWT_CONF = safe_load(f)
 
@@ -84,50 +88,26 @@ class Token:
         try:
             asses_token = request.headers['Authorization'].split(' ')[1]
             decoded = jwt.decode(asses_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
-            print(asses_token)
+            
+            return await decoded.get('user_id') 
         except jwt.ExpiredSignatureError:
-            print('time exp')
-            try: 
-                cookies = request.headers['Cookie']
-                refr = cookies[cookies.find('Ref')+4:]
-            except KeyError:
-                print("cookie is not aviable")
- 
-            decoded = jwt.decode(refr, self.JWT_CONF['RTsecret'], algorithms=['HS256']) # if error raise 403 
-            user_id = decoded.get('user_id')
-            
-            try: # must be on level db
-                user_data = await db_provider.user.get_access_data_table(user_id=user_id)
-                date = datetime.utcnow() # must have date type
-                
-                ATpayload = {
-                    'user_id': user_id,
-                    'exp': datetime.utcnow() + timedelta(seconds=self.JWT_CONF['exp_asses'])
-                }
 
-                RTpayload = {
-                    'user_id': user_id,
-                    'exp': datetime.utcnow() + timedelta(minutes=self.JWT_CONF['exp_refresh']) 
-                }
-
-                asses_token = jwt.encode(ATpayload, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
-                refresh_token = jwt.encode(RTpayload, self.JWT_CONF['RTsecret'], self.JWT_CONF['algoritm'])
-                
-                await db_provider.user.update_access_data_table(user_id=user_id, last_visit=date, refresh_token=refresh_token)
-                
-                self.resp.body()
-
-            except Exception as e:
-                print(f"Error: {e}")
-
+            raise HandlerStatusError(401)
         except jwt.InvalidSignatureError:
-            print('inv token')
+
+            raise HandlerStatusError(404)
         except Exception as e:
-            print('standart error')
-            print(f'Error: {e}')
-            # error_body = self.get_error_body(request, e)
-            
-            # raise 403 error
+
+            raise HandlerStatusError(404)
+        
+# move to a separate module
+#exmpl: https://github.com/encode/django-rest-framework/blob/19655edbf782aa1fbdd7f8cd56ff9e0b7786ad3c/rest_framework/exceptions.py#L140
+class HandlerStatusError(Exception): 
+    def __init__(self, *args: object) -> None:
+        if args:
+            self.status = args[0]
+
+    def __str__(self) -> str:
+        if self.status:
+            return f'{self.status}'
     
-        finally:
-            return self.response, ''

@@ -8,5 +8,9 @@
 
 update token store
 
+базовый класс get post options
+
 get time last_visit may in queue
 set sender to message
+
+когда делается запрос на сервер воз
