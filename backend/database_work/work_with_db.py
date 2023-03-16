@@ -9,6 +9,7 @@ class BaseDbWorkMixin():
 
     @staticmethod
     async def _add(table_name: str, arguments: dict):
+        print(arguments)
         try:
             keys = f'{", ".join([key for key in arguments.keys()])}'
 
@@ -16,29 +17,23 @@ class BaseDbWorkMixin():
             values = ', '.join(values)
 
             async with AsyncSession(engine) as session:
-                statement = text(f"""INSERT INTO {table_name}({keys}) VALUES({values})""")
+                statement = text(f"""INSERT INTO '{table_name}'({keys}) VALUES({values})""")
+                print(statement)
                 await session.execute(statement)
                 await session.commit()
 
             return {'error': False}
-        except exc.IntegrityError:
-            return {'error': True, 'type': 'IntegrityError', 'message': 'Row with thids parametres exists(but must be unique)'}   
         except Exception as e:
-            return {'error': True, 'type': f'{type(e)}', 'message': 'No message'}   
+            return {'error': True, 'type': f'{type(e)}', 'message': e}   
 
     @staticmethod
     async def _execute_statement(statement, session):
         try:    
-            await session.execute(statement)
+            response = await session.execute(statement)
             await session.commit() 
-            return {'error': False}
-        except exc.IntegrityError:
-            return {'error': True, 'type': 'IntegrityError', 'message': 'Row with thids parametres exists(but must be unique)'}   
-        except exc.OperationalError:
-            return {'error': True, 'type': 'OperationalError', 'message': 'No such table'}   
+            return {'error': False, 'response': response}
         except Exception as e:
-            print('123444')
-            return {'error': True, 'type': f'{type(e)}', 'message': 'No message'}   
+            return {'error': True, 'type': f'{type(e)}', 'message': e}    
 
 
 class UserInstance(BaseDbWorkMixin):
@@ -52,6 +47,7 @@ class UserInstance(BaseDbWorkMixin):
                 user_id = await db_provider.user.get_user_id(login)
                 await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
                 await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
+                return {'error': False, 'user_id': user_id}
             else:
                 return user
             
@@ -74,7 +70,8 @@ class UserInstance(BaseDbWorkMixin):
     
     async def create_photos_table(self, user_login):
         table_name = (str(user_login) + '_' +'photos').lower()
-        await create_user_photos_table(table_name, metadata, engine)
+        response = await create_user_photos_table(table_name, metadata, engine)
+        return response
 
     async def add_photo(self, user_login, photo_path):
         table_name = (str(user_login) + '_' + 'photos').lower()
@@ -111,9 +108,13 @@ class UserInstance(BaseDbWorkMixin):
     
     async def get_by_prefix(self, prefix):
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT login FROM user WHERE login LIKE '{prefix}%' LIMIT 10""")
-            objects = await session.execute(statement)
-            objects = objects.all()
+            statement = text(f"""SELECT * FROM user WHERE login LIKE '{prefix}%' LIMIT 10""")
+            response = await self._execute_statement(statement, session)
+            
+            if response['error']:
+                return response
+            
+            objects = response['response'].all()
             return objects
 
 
@@ -122,59 +123,91 @@ class ChatInstance():
         
         user1_id = await db_provider.user.get_user_id(user1_login)
         user2_id = await db_provider.user.get_user_id(user2_login)
+        
 
-        if not user1_id or not user2_id:
-            print('No user with such login')
-            return 'No user with such login'
+        if user1_id['error'] or user1_id['error']:
+            return user1_id
+        
+        print(user1_id, user2_id)
         
         # Creating Chat_Instance
-        await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id, 'user_2': user2_id})
+        response = await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id['user_id'], 'user_2': user2_id['user_id'], 'unreaden_message_id': 0})
+
+        if response['error']:
+            return response
 
         # Creating Chat_Messages table
         chat_name = (str(user1_login) + '_' + str(user2_login)).lower()
         await create_chat_messages_table(chat_name, metadata, engine)
 
         # Creating Pagination_table 
-        table_name = ('pagination_' + str(user1_login) + '_' + str(user2_login)).lower()
-        await create_chat_messages_pagination_table(table_name, metadata, engine)
+        # table_name = ('pagination_' + str(user1_login) + '_' + str(user2_login)).lower()
+        # await create_chat_messages_pagination_table(table_name, metadata, engine)
+        # await BaseDbWorkMixin._add(table_name, {'user_id': user1_id, 'message_id': 0}) # If message_id = 0 it means that it is last message
+        # await BaseDbWorkMixin._add(table_name, {'user_id': user2_id, 'message_id': 0})
 
-        await BaseDbWorkMixin._add(table_name, {'user_id': user1_id, 'message_id': 0}) # If message_id = 0 it means that it is last message
-        await BaseDbWorkMixin._add(table_name, {'user_id': user2_id, 'message_id': 0})
+        print(response, 154)
+        return response
 
 
     async def add_message(self, table_name, sender_login, content):
         sender_id = await db_provider.user.get_user_id(sender_login)
-        await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id, 'content': content})
+
+        if sender_id['error']:
+            return sender_id
+        
+        print(sender_id['user_id'], content)
+        message = MessageSerializer(sender_id['user_id'], content)
+
+        if not message.is_valid:
+            return message.error_data
+        response = await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id['user_id'], 'content': content})
+        return response
         
     async def get_user_chats(self, user_login):
         user_id = await db_provider.user.get_user_id(user_login)
+
+        if user_id['error']:
+            return user_id
+        
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT * FROM chat_instance WHERE user_1 = '{user_id}' OR user_2 = '{user_id}' """)
-            chat_objects_future = await session.execute(statement)
-            chat_objects = chat_objects_future.all()
+            statement = text(f"""SELECT * FROM chat_instance WHERE user_1 = '{user_id['user_id']}' OR user_2 = '{user_id['user_id']}' """)
+            print(statement)
+            response = await BaseDbWorkMixin._execute_statement(statement, session)
 
-            user_chats = []
-            for row  in chat_objects:
-                user_chats.append(row)
+            if response['error']:
+                return response
+            
+            chat_objects = response['response'].all()
 
-        return user_chats # Объекты чатов
+            return chat_objects
+        
     
     async def get_chat_messages(self, table_name, message_id): # Возвращает 25 сообщений, начиная с определённого
-        async with engine.connect() as con:
+        async with AsyncSession(engine) as session:
             
-            statement = text(f'''SELECT user_id from user ORDER BY user_id DESC
-                                 LIMIT 25 ;''')
-            last_user = await con.execute(statement)
+            statement = text(f'''SELECT * FROM '{table_name}' ORDER BY message_id DESC LIMIT 1;''')
+            response = await BaseDbWorkMixin._execute_statement(statement, session)
             
-            last_user_id = last_user.first().user_id
+            
+            if response['error']:
+                return response
+            
+            last_message_id = response['response'].first()
+            last_message_id = last_message_id.message_id
+            print(last_message_id)
 
-            statement = text(f'''SELECT user_id from user WHERE user_id <= {last_user_id - message_id}  ORDER BY user_id DESC
-                                   LIMIT 25;''')
-            
-            user_objects = await con.execute(statement)
-            users = user_objects.all()
+            statement = text(f'''SELECT * from '{table_name}' WHERE message_id <= {last_message_id - message_id+1}  ORDER BY message_id DESC
+                                   LIMIT 5;''')
 
-        return users
+            print(statement) 
+            response = await BaseDbWorkMixin._execute_statement(statement, session)
+            if response['error']:
+                return response
+            
+            messages = response['response'].all()
+
+            return messages
 
 class WorkWithDatabase():
     def __init__(self) -> None:
