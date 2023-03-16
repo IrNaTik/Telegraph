@@ -1,5 +1,4 @@
 from aiohttp import web
-from aiohttp_jwt import JWTMiddleware
 import aiohttp_debugtoolbar  #debug 
 
 # from init_db import pg_context
@@ -16,14 +15,11 @@ from apps.v1.auth.middlewares import Token_handler
 
 def setup_routes(application):
     urlpatterns(application)  
-    # print(app.router.routes().__iter__())
-    # for rout in app.router.routes().__iter__():
-    #     print(rout)
-    
+
+
 def setup_middlewares(app):
-    pass
-    # mdw = Middleware()
-    # app.middlewares.append(mdw.midlleware)
+    mdw = Middleware()
+    app.middlewares.append(mdw.midlleware)
     
 
 
