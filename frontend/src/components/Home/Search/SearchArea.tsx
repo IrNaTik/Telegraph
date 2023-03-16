@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from "react";
-import $api from "src/api/axios";
+import $api from "src/utils/api/axios";
 import { useAppSelector } from "src/store/store";
 
 

@@ -8,11 +8,6 @@ from routes import urlpatterns
 from apps.v1.middlewares import Middleware
 
 
-
-
-
-from apps.v1.auth.middlewares import Token_handler
-
 def setup_routes(application):
     urlpatterns(application)  
 

@@ -87,6 +87,7 @@ class AuthView(web.View):
         login = self.request.query.get('login')
         password = self.request.query.get('password')
         # check taht pass and login is valid    
+        print(self.request)
         
         # #only for test
         try:

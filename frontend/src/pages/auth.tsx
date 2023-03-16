@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import {  useNavigate } from "react-router";
 
-import Form from "./form/form";
+import Form from "../components/Auth/form/form";
 
-import $api from "src/api/axios";
+import $api from "src/utils/api/axios";
 
 
 export default function Auth(props: any) {

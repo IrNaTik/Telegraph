@@ -13,13 +13,16 @@ import {
     PURGE,
     REGISTER, } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import ChatSlice from "./chat";
 
 // import tokenSlice from "./tokens";
 import MessageSlice from "./messsages";
 
 const rootReducer = combineReducers({
     // TokenStore: tokenSlice.reducer,
-    MessageStore: MessageSlice.reducer
+    MessageStore: MessageSlice.reducer,
+    ChatStore: ChatSlice.reducer
+
 })
 
 const persistConfig = {

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Clist } from "./ChatList/Clist";
-import { ChatIns } from "./Chat/Chat";
-import SearchArea from "./Search/SearchArea";
+import { Clist } from "../components/Home/ChatList/Clist";
+import { ChatIns } from "../components/Home/Chat/Chat";
+import SearchArea from "../components/Home/Search/SearchArea";
 import { useNavigate } from "react-router";
-import axios from "src/api/axios";
+import axios from "src/utils/api/axios";
 
 
 export default function Home(props: any) {
