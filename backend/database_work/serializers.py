@@ -76,7 +76,29 @@ class PhotoSerializer(BaseSerializer):
         if len(path) <= 8 or len(path) > 60:
             self.is_valid = False
             raise IncorrectFormat('Length of "photo_path" must be shorter then 60 and longer then 8')
-            
+        
+
+class MessageSerializer(BaseSerializer):
+    def __init__(self, sender_id, content) -> None:
+        try:
+            super().__init__([[sender_id, int, 'sender_id'], [content, str, 'content']])
+
+            if self.is_valid:
+                self.check_format(sender_id, content)
+        except EmptyValue:
+            self.error_data['type'] = 'EmptyValue'
+            self.error_data['message'] = 'Values must not be empty'
+        except IncorrectTypes as error:
+            self.error_data['type'] = 'IncorrectTypes'
+            self.error_data['message'] = error.error_message
+        except IncorrectFormat as error:
+            self.error_data['type'] = 'IncorrectFormat'
+            self.error_data['message'] = error.error_message
+
+
+    def check_format(self, login, password):
+        pass
+        
       
             
         

@@ -52,10 +52,17 @@ async def async_main() -> None:
     # c = await db_provider.chat.get_chat_messages('', 1000)
     
     # c = await db_provider.user.add_user('Igantio', 'fjfvfvgfd')
-    c = await db_provider.user.add_photo('kmlfksljdfdnl', 'fjdshfsjdhfdsjhfdkjs')
-    print(c, datetime.now() - start_time)
+    # c = await db_provider.user.add_photo('kmlfksljdfdnl', 'fjdshfsjdhfdsjhfdkjs')
+    # print(c, datetime.now() - start_time)
+
+    # for  i in range(15):
+    #     c = await db_provider.chat.add_message('999_99', 'Titan', f'Hello world {i}')
+    #     print(c)
+
+    c = await db_provider.chat.get_chat_messages('999_99', 20)
+    print(c)
             
-    
+     
     
 
 

@@ -14,20 +14,28 @@ class Chat_Instance(Base):
 
 
 async def create_chat_messages_table(table_name, metadata, engine):
-    table_object = sa.Table(table_name, metadata, 
-                            sa.Column('message_id', sa.Integer, primary_key=True, nullable=False),
-                            sa.Column('sender_id', sa.ForeignKey('user.user_id'), nullable=False),
-                            sa.Column('content', sa.TEXT, nullable=False))
-    async with engine.begin() as conn:
-        await conn.run_sync(metadata.create_all)
+    try:
+        table_object = sa.Table(table_name, metadata, 
+                                sa.Column('message_id', sa.Integer, primary_key=True, nullable=False),
+                                sa.Column('sender_id', sa.ForeignKey('user.user_id'), nullable=False),
+                                sa.Column('content', sa.TEXT, nullable=False))
+        async with engine.begin() as conn:
+            await conn.run_sync(metadata.create_all)
+        return {'error': False}
+    except:
+        return {'error': True, 'type': 'OperationalError', 'nessage': 'New table has not been established'}
 
 async def create_chat_messages_pagination_table(table_name, metadata, engine):
-    table_object = sa.Table(table_name, metadata, 
-                            # sa.Column('chat_id', sa.Integer, primary_key=True, nullable=False),
-                            sa.Column('user_id', sa.ForeignKey('user.user_id'), nullable=False),
-                            sa.Column('message_id', sa.Integer, nullable=False))
-    async with engine.begin() as conn:
-        await conn.run_sync(metadata.create_all)
+    try:
+        table_object = sa.Table(table_name, metadata, 
+                                # sa.Column('chat_id', sa.Integer, primary_key=True, nullable=False),
+                                sa.Column('user_id', sa.ForeignKey('user.user_id'), nullable=False),
+                                sa.Column('message_id', sa.Integer, nullable=False))
+        async with engine.begin() as conn:
+            await conn.run_sync(metadata.create_all)
+        return {'error': False}
+    except:
+        return {'error': True, 'type': 'OperationalError', 'nessage': 'New table has not been established'}
     
     
 
