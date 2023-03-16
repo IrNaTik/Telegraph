@@ -31,8 +31,9 @@ class UsernameSearching(web.View):
         prefix = self.request.headers['prefix']
         users = await db_provider.user.get_by_prefix(prefix)
         logins = [user.login for user in users]
+        print(logins)
 
-        return logins, 200 
+        return [logins, 200]
             
 
     async def options(self):

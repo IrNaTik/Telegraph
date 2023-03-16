@@ -57,16 +57,18 @@ class Middleware:
             try:
                 # user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
                 # print(user_id)
+                
+                response = await handler(request)
+                # print(body, status)
+                
+            # except HandlerStatusError as hs:
 
-                self.body, self.status = await handler(request)
-            except HandlerStatusError as hs:
-
-                if hs == 401:
-                    self.status = 401
-                    self.body = self.get_error_body(HandlerStatusError)
-                elif hs == 404:
-                    self.status = 401
-                    self.body = self.get_error_body(HandlerStatusError)
+            #     if hs == 401:
+            #         self.status = 401
+            #         self.body = self.get_error_body(HandlerStatusError)
+            #     elif hs == 404:
+            #         self.status = 401
+            #         self.body = self.get_error_body(HandlerStatusError)
             
             except Exception as e:
                 self.status = 500
