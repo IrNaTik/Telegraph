@@ -42,11 +42,11 @@ class UserInstance(BaseDbWorkMixin):
 
         if new_user.is_valid:
             user = await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
-
+            print(user)
             if not user['error']: 
                 user_id = await db_provider.user.get_user_id(login)
-                await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
-                await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
+                await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id['user_id'], 'last_visit': 'null', 'refresh_token': 'null'})
+                await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id['user_id'], 'username': 'null', 'description': 'null'})
                 return {'error': False, 'user_id': user_id}
             else:
                 return user

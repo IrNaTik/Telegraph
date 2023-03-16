@@ -59,8 +59,8 @@ async def async_main() -> None:
     #     c = await db_provider.chat.add_message('999_99', 'Titan', f'Hello world {i}')
     #     print(c)
 
-    c = await db_provider.chat.get_chat_messages('999_99', 20)
-    print(c)
+    # c = await db_provider.chat.get_chat_messages('999_99', 20)
+    # print(c)
             
      
     
