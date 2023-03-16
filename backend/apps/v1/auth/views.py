@@ -84,17 +84,23 @@ class AuthView(web.View):
 
 
     async def post(self):
-        login = self.request.query.get('login')
-        password = self.request.query.get('password')
+        # login = self.request.query.get('login')
+        # password = self.request.query.get('password')
         # check taht pass and login is valid    
-        print(self.request)
+        login = "Ignat"
+        password = "123422567890"
         
         # #only for test
-        try:
-            user_id = await db_provider.user.get_user_id(login) 
-        except:
-            await db_provider.user.add_user(login, password)
-            user_id = await db_provider.user.get_user_id(login)
+        # try:
+        #     user_id = await db_provider.user.get_user_id(login) 
+        # except:
+        # await db_provider.user.add_user(login, password)
+        user = await db_provider.user.get_user_id(login)
+        
+        if  not user['error']:
+            user_id = user['user_id']
+        else: 
+            user_id = 1 #handler error
 
         ATpayload = {
             'user_id': user_id,

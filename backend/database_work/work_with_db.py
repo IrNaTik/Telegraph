@@ -99,7 +99,7 @@ class UserInstance(BaseDbWorkMixin):
         
     async def get_access_data_table(self, user_id):
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT refresh_token FROM user_access_data WHERE user_id = {user_id} """)
+            statement = text(f"""SELECT refresh_token FROM user_access_data WHERE user_id={user_id} """)
             user_object = await session.execute(statement)
             user_data = user_object.first()
             
