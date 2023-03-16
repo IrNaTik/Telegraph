@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import axios from 'src/api/axios';
+import React, { useRef, useState } from "react";
+import axios from "axios";
 
-import { useAppDispatch } from "src/store/store";
-import { update } from "src/store/tokens";
-
-import Logo from "src/common/logo/logo";
+import Logo from "src/components/common/logo/logo";
+import $api from "src/api/axios";
 
 interface LoginForm {
     login: string,
     password: string
 }
 
+
 export default function Form(props: any) {
-    const dispatch = useAppDispatch()
+    const inpRef = useRef<HTMLInputElement>(null)
+    const inpRef1 = useRef<HTMLInputElement>(null)
     const [form, setForm] = useState<LoginForm>({
         login: "",
         password: ""
@@ -27,11 +27,18 @@ export default function Form(props: any) {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         
-        axios.post('/login', form)
+        $api.post('http://localhost:8000/login', form)
         .then((response) => {
-            const AssessToken = response.data.AssesToken
-            dispatch(update(AssessToken)) 
+            localStorage.setItem('token', response.data.AssesToken)
         })
+
+        setForm({
+            login: '',
+            password: ''
+        })
+        
+        inpRef.current!.value = ''
+        inpRef1.current!.value = ''
     }
 
     return (
@@ -40,9 +47,9 @@ export default function Form(props: any) {
                 <Logo></Logo>
                 <h4 className="Header-Form">Sing in to Telegraf</h4>
                 <p className="Title-Form">Please enter you login and password</p> 
-                <input className="Input-Form" type="text" name="login" placeholder="Login" onChange={handleForm}/>  
+                <input className="Input-Form" type="text" name="login" placeholder="Login" onChange={handleForm} ref={inpRef}/>  
 
-                <input className="Input-Form" type="password" name="password"  placeholder="password" onChange={handleForm}/>
+                <input className="Input-Form" type="password" name="password"  placeholder="password" onChange={handleForm} ref={inpRef1} />
                 <input className="Submit-Form" type="submit" value="Sign In" />
                 <a className="Link-Form"  href="#">Forgot Passord</a>
             </form>

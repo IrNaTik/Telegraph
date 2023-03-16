@@ -7,11 +7,6 @@ class UsernameSearching(web.View):
         
         self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000',
                     'Access-Control-Allow-Credentials': 'true',
-                    'Allow': 'OPTIONS, GET, POST',
-            'Access-Control-Request-Method': 'POST',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-            'Access-Control-Allow-Headers': '''Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization''',
-            'Access-Control-Request-Headers': '''prefix'''
         }
         self.POST = {
             
@@ -30,10 +25,16 @@ class UsernameSearching(web.View):
     async def get(self):
         prefix = self.request.headers['prefix']
         users = await db_provider.user.get_by_prefix(prefix)
+<<<<<<< HEAD
         logins = [user.login for user in users]
         print(logins)
 
         return [logins, 200]
+=======
+        user_login = [user.login for user in users]
+
+        return web.json_response(data=user_login, headers=self.GET) 
+>>>>>>> de3a37e280b2237b9a96961945297d0cb20fea8f
             
 
     async def options(self):

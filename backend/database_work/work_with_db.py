@@ -93,7 +93,8 @@ class UserInstance(BaseDbWorkMixin):
             statement = text(f'''UPDATE user_access_data
                                  SET last_visit = '{last_visit}', refresh_token='{refresh_token}'
                                  WHERE user_id = {user_id};''')
-            return self._execute_statement(statement, session)
+            response = await self._execute_statement(statement, session)
+            return response
             
         
     async def get_access_data_table(self, user_id):
