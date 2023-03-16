@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from 'src/common/logo/logo';
+import Logo from 'src/components/common/logo/logo';
 
 export function Citem(props: any) {
     return(

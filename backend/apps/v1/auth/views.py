@@ -79,7 +79,7 @@ class AuthView(web.View):
         if await self.valid_token():
             return web.json_response(headers=self.GET, status=200)  # redirect to home
         else:
-            return web.json_response(headers=self.OPTIONS, status=404)
+            return web.json_response(headers=self.OPTIONS, status=200)
         
 
 
@@ -88,14 +88,13 @@ class AuthView(web.View):
         password = self.request.query.get('password')
         # check taht pass and login is valid    
         
-        #only for test
-        try:
-            user_id = await db_provider.user.get_user_id(login) 
-        except:
-            await db_provider.user.add_user(login, password)
-            user_id = await db_provider.user.get_user_id(login)
-
-
+        # #only for test
+        # try:
+        #     user_id = await db_provider.user.get_user_id(login) 
+        # except:
+        #     await db_provider.user.add_user(login, password)
+        #     user_id = await db_provider.user.get_user_id(login)
+        user_id = 1
 
         ATpayload = {
             'user_id': user_id,
@@ -112,7 +111,7 @@ class AuthView(web.View):
         jwt_token = jwt.encode(ATpayload, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
         refresh_token = jwt.encode(RTpayload, self.JWT_CONF['RTsecret'], self.JWT_CONF['algoritm'])
         
-        await db_provider.user.update_access_data_table(login, 1, refresh_token)
+        # await db_provider.user.update_access_data_table(login, 1, refresh_token)
 
         value = {
             'AssesToken': jwt_token

@@ -96,7 +96,8 @@ class UserInstance(BaseDbWorkMixin):
             statement = text(f'''UPDATE user_access_data
                                  SET last_visit = '{last_visit}', refresh_token='{refresh_token}'
                                  WHERE user_id = {user_id};''')
-            return self._execute_statement(statement, session)
+            response = await self._execute_statement(statement, session)
+            return response
             
         
     async def get_access_data_table(self, user_id):
@@ -110,7 +111,7 @@ class UserInstance(BaseDbWorkMixin):
     
     async def get_by_prefix(self, prefix):
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT * FROM user WHERE login LIKE '{prefix}%' LIMIT 10""")
+            statement = text(f"""SELECT login FROM user WHERE login LIKE '{prefix}%' LIMIT 10""")
             objects = await session.execute(statement)
             objects = objects.all()
             return objects
