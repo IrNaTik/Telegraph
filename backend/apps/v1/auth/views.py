@@ -89,17 +89,16 @@ class AuthView(web.View):
         # check taht pass and login is valid    
         
         # #only for test
-        # try:
-        #     user_id = await db_provider.user.get_user_id(login) 
-        # except:
-        #     await db_provider.user.add_user(login, password)
-        #     user_id = await db_provider.user.get_user_id(login)
-        user_id = 1
+        try:
+            user_id = await db_provider.user.get_user_id(login) 
+        except:
+            await db_provider.user.add_user(login, password)
+            user_id = await db_provider.user.get_user_id(login)
 
         ATpayload = {
             'user_id': user_id,
             'exp': datetime.utcnow() +
-            timedelta(minutes=self.JWT_CONF['exp_asses'])
+            timedelta(seconds=self.JWT_CONF['exp_asses'])
         }
 
         RTpayload = {
@@ -111,16 +110,13 @@ class AuthView(web.View):
         jwt_token = jwt.encode(ATpayload, self.JWT_CONF['ATsecret'], self.JWT_CONF['algoritm'])
         refresh_token = jwt.encode(RTpayload, self.JWT_CONF['RTsecret'], self.JWT_CONF['algoritm'])
         
-        # await db_provider.user.update_access_data_table(login, 1, refresh_token)
+        await db_provider.user.update_access_data_table(login, user_id, refresh_token)
 
         value = {
             'AssesToken': jwt_token
         }
         
-
         resp = web.json_response(data=value, headers=self.OPTIONS)
-
-
         resp.set_cookie(name="Ref", value=refresh_token, httponly=True ,
                         max_age=self.JWT_CONF['exp_refresh'] * 60)
 

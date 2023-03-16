@@ -39,26 +39,28 @@ class Middleware:
             return await self.run_handler(request, handler)
         elif  request.rel_url.path == '/ws/chat/':
             return await self.run_handler(request, handler)
+        elif  request.rel_url.path == '/api/refresh':
+            return await self.run_handler(request, handler)
         else:
             
             try:
                 if request.method != 'OPTIONS':
                     user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
 
-
+            
                 return await self.run_handler(handler=handler, request=request)
                 
             except HandlerStatusError as hs:
-
-                if hs == 401:
+            
+                if hs.status == 401:
                     self.status = 401
                     self.body = {
-                        type: "token is not valid"
+                        'type': "token is not valid"
                     }
-                elif hs == 404:
+                elif hs.status == 404:
                     self.status = 401
                     self.body = {
-                        type: "token is invalid"
+                        'type': "token is invalid"
                     }
                 
                 return web.json_response(data=self.body, status=self.status, headers=self.headers)
@@ -66,7 +68,7 @@ class Middleware:
             except Exception as e:
                 self.status = 500
                 self.body = self.get_error_body(e)
-                print(e)
+                print(e)  
 
                 return web.json_response(data=self.body, status=self.status, headers=self.headers)
 
@@ -86,7 +88,7 @@ class Token:
             
             return decoded.get('user_id') 
         except jwt.ExpiredSignatureError:
-
+            print("exp time")
             raise HandlerStatusError(401)
         except jwt.InvalidSignatureError:
 

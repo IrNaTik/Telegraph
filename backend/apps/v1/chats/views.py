@@ -70,7 +70,6 @@ class GetChatWithUser(web.View):
 
     async def get(self):
         prefix = self.request.headers
-        print(prefix)
         # users = await db_provider.user.get_by_prefix(prefix)
         # logins = [user.login for user in users]
 
@@ -78,5 +77,4 @@ class GetChatWithUser(web.View):
             
 
     async def options(self):
-        print(11111)
         return web.Response(headers=self.OPTIONS)

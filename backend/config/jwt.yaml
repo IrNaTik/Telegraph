@@ -1,5 +1,5 @@
 ATsecret: secretPrase
 RTsecret: refresh
 algoritm: HS256
-exp_asses: 100
+exp_asses: 1
 exp_refresh: 120

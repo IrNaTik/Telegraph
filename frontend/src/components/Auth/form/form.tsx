@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import axios from "axios";
 
 import Logo from "src/components/common/logo/logo";
+import $api from "src/api/axios";
 
 interface LoginForm {
     login: string,
@@ -26,7 +27,7 @@ export default function Form(props: any) {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         
-        axios.post('http://localhost:8000/login', form)
+        $api.post('http://localhost:8000/login', form)
         .then((response) => {
             localStorage.setItem('token', response.data.AssesToken)
         })

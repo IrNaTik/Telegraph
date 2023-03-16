@@ -14,7 +14,14 @@ $api.interceptors.request.use( config => {
 $api.interceptors.response.use(config => {
     return config
 }, (error => {
-    console.log(error)
+
+    if (error.response.status === 401) {
+        $api.post('/api/refresh')
+        .then(resp => {
+            localStorage.setItem('token', resp.data.AssesToken)
+            return $api.request(error.config)
+        })
+    } 
 }))
 
 export default $api;
