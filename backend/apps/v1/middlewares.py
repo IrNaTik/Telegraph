@@ -35,6 +35,7 @@ class Middleware:
         self, request: web.Request, handler: Callable
         ) -> web.Response:
 
+              
         if request.rel_url.path == "/login":
             return await self.run_handler(request, handler)
         elif  request.rel_url.path == '/ws/chat/':

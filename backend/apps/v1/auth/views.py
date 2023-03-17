@@ -84,17 +84,31 @@ class AuthView(web.View):
 
 
     async def post(self):
-        login = self.request.query.get('login')
-        password = self.request.query.get('password')
+        login = self.request.query.get('login', None)
+        password = self.request.query.get('password', None)
+        for el in self.request.query.keys():
+            print(1)
+        print(self.request.query.items())
+        print('password' in str(self.request.__dict__))
         # check taht pass and login is valid    
         
-        # #only for test
-        try:
-            user_id = await db_provider.user.get_user_id(login) 
-        except:
-            await db_provider.user.add_user(login, password)
-            user_id = await db_provider.user.get_user_id(login)
+        # #only for test (incorrect text) )))
+        
+        print(login)
+        user_id = await db_provider.user.get_user_id(login) 
+        
+        if not user_id['error']:
+            user_id = user_id['user_id']
 
+        #
+        # Нужно проверять на ощибку если юзера нет, создать ему учётную запись
+        #
+
+        # else:
+        #     response = await db_provider.user.add_user(login, password)
+        #     print(response)
+        #     user_id = await db_provider.user.get_user_id(login)
+        print(user_id)
         ATpayload = {
             'user_id': user_id,
             'exp': datetime.utcnow() +

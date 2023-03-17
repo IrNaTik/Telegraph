@@ -55,16 +55,16 @@ class UserInstance(BaseDbWorkMixin):
         
 
 
-    async def get_user_id(self, login):
+    async def get_user_id(self, username):
         async with AsyncSession(engine) as session:
             try:
-                statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
+                statement = text(f"""SELECT * FROM user_parametres WHERE username = '{username}' """)
                 user_object = await session.execute(statement)
                 
                 user_id = user_object.first().user_id
                 return {'error': False, 'user_id': user_id}
             except AttributeError:
-                return {'error': True, 'type': 'AttributeArror', 'message': 'No user with such login'}
+                return {'error': True, 'type': 'AttributeArror', 'message': 'No user with such username'}
             
         
     
@@ -99,6 +99,7 @@ class UserInstance(BaseDbWorkMixin):
         
     async def get_access_data_table(self, user_id):
         async with AsyncSession(engine) as session:
+            print(user_id)
             statement = text(f"""SELECT refresh_token FROM user_access_data WHERE user_id = {user_id} """)
             user_object = await session.execute(statement)
             user_data = user_object.first()

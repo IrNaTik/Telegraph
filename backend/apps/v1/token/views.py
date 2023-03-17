@@ -34,8 +34,10 @@ class TokenView(web.View):
             print("cookie is not aviable")
         
         decoded = jwt.decode(refr, self.JWT_CONF['RTsecret'], algorithms=['HS256']) # if error raise 403 
+        print(decoded)
         user_id = decoded.get('user_id')
         
+        print(user_id)
         user_data = await db_provider.user.get_access_data_table(user_id=user_id)
         date = datetime.utcnow() # must have date type
         

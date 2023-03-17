@@ -1,6 +1,7 @@
 
 from aiohttp import web, WSMsgType
 import json
+from datetime import datetime
 from database_work import db_provider
 
 
@@ -13,9 +14,15 @@ def check_chat_existing(request, ws ,chat_id):
     request.app[chat_id].append(ws)
     
     return request
+
+async def check_user_existing(username):
+    response = await db_provider.user.get_user_id(username)
+    return response
+
         
 async def websocket_chat(request): # request это что-то по типу scope
 
+    print(request)
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     # await ws.send_json({'type': 'requestForChatId'})
@@ -26,10 +33,14 @@ async def websocket_chat(request): # request это что-то по типу sc
             msg_type = data.get('type', None)
             
             if msg_type:
+                if msg_type == 'chatBegin':
+                    my_username = data.get('myUsername', None)
+                    person_username = data.get('personUsername', None)
+                    print(my_username, person_username)
+                    response = check_user_existing(person_username)
 
-                if msg_type == 'chatId':
-                    chat_id = data.get('chatId', None)
-                    request = check_chat_existing(request, ws , chat_id) # Если чата с таким id не было, то будет создан
+                    # if response['error']
+                    # request = check_chat_existing(request, ws , chat_id) # Если чата с таким id не было, то будет создан
                 elif msg_type == 'message':
                     message = data.get('message', None)
                     chat_id = data.get('chatId', None)
@@ -43,7 +54,13 @@ async def websocket_chat(request): # request это что-то по типу sc
             print('ws connection closed with exception %s' %
                   ws.exception())
 
-    print('websocket connection closed')
+    # Get user last visit and update the databse
+    # print(datetime.utcnow())
+    # user_id = await db_provider.user.get_user_id('Ignatio')
+    # response = await db_provider.user.get_access_data_table()
+    # print(response)
+    # await db_provider.user.update_access_data_table()
+    # print('websocket connection closed')
 
     return ws
 
@@ -69,12 +86,17 @@ class GetChatWithUser(web.View):
         super().__init__(request)
 
     async def get(self):
-        prefix = self.request.headers
+        # prefix = self.request.headers
         # users = await db_provider.user.get_by_prefix(prefix)
         # logins = [user.login for user in users]
+
+        username = self.request.match_info.get('username', "Anonymous")
+        print(username)
 
         return web.json_response(data={1: 2}, headers=self.GET, status=200) 
             
 
     async def options(self):
+        username = self.request.match_info.get('username', "Anonymous")
+        print(username)
         return web.Response(headers=self.OPTIONS)

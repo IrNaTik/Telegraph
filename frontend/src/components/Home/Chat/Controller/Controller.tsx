@@ -13,35 +13,46 @@ export function Controller(props:any) {
     
     const WS_URL = 'ws://localhost:8000/ws/chat/' // Подключение к сокету
 
-    const { sendJsonMessage } = useWebSocket(decodeURI(WS_URL), {
-        onOpen: () => {
+    // const { sendJsonMessage } = useWebSocket(decodeURI(WS_URL), {
+    //     onOpen: () => {
 
-        //   const chatId = window.location.pathname.split('/').pop()
-        const chatId = 1   
-        sendJsonMessage({
-            'type': 'chatId',
-            'chatId': chatId
-          })    
-        },
-        onMessage: (response) => {
-          const data = JSON.parse(response.data) 
+    //         const arr = window.location.href.split('/')
+    //         const last = arr.length - 1
+            
+    //         if (arr[last]) {
+    //             console.log('good')
+    //             sendJsonMessage({
+    //                 'type': 'chatBegin',
+    //                 'personUsername': arr[last],
+    //                 'myUsername': 'Ignat' // Здесь должны быть данные из storage
+    //             })
+    //         } else {
+    //             console.log('User is not choosen')
+    //         }
+                
+            
+
+    //     }
+    //     ,
+    //     onMessage: (response) => {
+    //       const data = JSON.parse(response.data) 
           
-          if (data.type === "message"){
-            dispatch(MessageSlice.actions.add(data.message))
-          }
+    //       if (data.type === "message"){
+    //         dispatch(MessageSlice.actions.add(data.message))
+    //       }
           
-        }
-      });
+    //     }
+    //   });
 
     function submitMessage(){
         // const chatId= window.location.pathname.split('/').pop()
         const chatId = 1
-        sendJsonMessage({
-            'type': 'message',
-            'message': userMessage, 
-            'chatId': chatId
-        })
-        setUserMessage('')
+        // sendJsonMessage({
+        //     'type': 'message',
+        //     'message': userMessage, 
+        //     'chatId': chatId
+        // })
+        // setUserMessage('')
     }
 
     function handleChange(e: any) {        
