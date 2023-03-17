@@ -8,11 +8,6 @@ from routes import urlpatterns
 from apps.v1.middlewares import Middleware
 
 
-
-
-
-
-
 def setup_routes(application):
     urlpatterns(application)  
 

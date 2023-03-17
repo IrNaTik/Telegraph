@@ -42,11 +42,11 @@ class UserInstance(BaseDbWorkMixin):
 
         if new_user.is_valid:
             user = await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
-
+            print(user)
             if not user['error']: 
                 user_id = await db_provider.user.get_user_id(login)
-                await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id, 'last_visit': 'null', 'refresh_token': 'null'})
-                await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id, 'username': 'null', 'description': 'null'})
+                await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id['user_id'], 'last_visit': 'null', 'refresh_token': 'null'})
+                await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id['user_id'], 'username': 'null', 'description': 'null'})
                 return {'error': False, 'user_id': user_id}
             else:
                 return user
@@ -99,8 +99,7 @@ class UserInstance(BaseDbWorkMixin):
         
     async def get_access_data_table(self, user_id):
         async with AsyncSession(engine) as session:
-            print(user_id)
-            statement = text(f"""SELECT refresh_token FROM user_access_data WHERE user_id = {user_id} """)
+            statement = text(f"""SELECT refresh_token FROM user_access_data WHERE user_id={user_id} """)
             user_object = await session.execute(statement)
             user_data = user_object.first()
             

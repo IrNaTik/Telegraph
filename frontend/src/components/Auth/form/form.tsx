@@ -2,7 +2,9 @@ import React, { useRef, useState } from "react";
 import axios from "axios";
 
 import Logo from "src/components/common/logo/logo";
-import $api from "src/api/axios";
+import $api from "src/utils/api/axios";
+import { NavLink } from "react-router-dom";
+import { CHATS_ROUTE } from "src/utils/consts";
 
 interface LoginForm {
     login: string,
@@ -26,9 +28,14 @@ export default function Form(props: any) {
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
+<<<<<<< HEAD
         
         console.log(form)
         $api.post('http://localhost:8000/login', {data: form})
+=======
+
+        $api.post('http://localhost:8000/login', form)
+>>>>>>> 3a0918f2b12d4ac36056e4bd0e388765c27b216d
         .then((response) => {
             localStorage.setItem('token', response.data.AssesToken)
         })
@@ -52,7 +59,7 @@ export default function Form(props: any) {
 
                 <input className="Input-Form" type="password" name="password"  placeholder="password" onChange={handleForm} ref={inpRef1} />
                 <input className="Submit-Form" type="submit" value="Sign In" />
-                <a className="Link-Form"  href="#">Forgot Passord</a>
+                <NavLink to={CHATS_ROUTE} className="Link-Form"> Forgot Passord</NavLink>
             </form>
         </div>
     )

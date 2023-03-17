@@ -84,31 +84,33 @@ class AuthView(web.View):
 
 
     async def post(self):
-        login = self.request.query.get('login', None)
-        password = self.request.query.get('password', None)
-        for el in self.request.query.keys():
-            print(1)
-        print(self.request.query.items())
-        print('password' in str(self.request.__dict__))
-        # check taht pass and login is valid    
-        
-        # #only for test (incorrect text) )))
-        
-        print(login)
-        user_id = await db_provider.user.get_user_id(login) 
-        
-        if not user_id['error']:
-            user_id = user_id['user_id']
+        # login = self.request.query.get('login')
+        # password = self.request.query.get('password')
+        # check taht pass and login is valid
+        resp = await self.request.content.read() 
+        result = json.loads(resp.decode('utf-8')) # handle error
 
-        #
-        # Нужно проверять на ощибку если юзера нет, создать ему учётную запись
-        #
 
-        # else:
-        #     response = await db_provider.user.add_user(login, password)
-        #     print(response)
-        #     user_id = await db_provider.user.get_user_id(login)
-        print(user_id)
+        login = result['login']
+        password = result['password']
+        
+        # #only for test
+        # try:
+        #     user_id = await db_provider.user.get_user_id(login) 
+        # except:
+        resp = await db_provider.user.add_user(login, password)
+        print(resp)
+        if  resp['error']:
+            if resp['type'] == 'IncorrectFormat':
+                pass
+        
+        user = await db_provider.user.get_user_id(login)
+        
+        if  not user['error']:
+            user_id = user['user_id']
+        else: 
+            user_id = 1 #handler error
+
         ATpayload = {
             'user_id': user_id,
             'exp': datetime.utcnow() +

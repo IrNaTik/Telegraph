@@ -42,7 +42,7 @@ class TokenView(web.View):
         date = datetime.utcnow() # must have date type
         
         ATpayload = {
-            'user_id': user_id,
+            'user_id': user_id, 
             'exp': datetime.utcnow() + timedelta(seconds=self.JWT_CONF['exp_asses'])
         }
 
