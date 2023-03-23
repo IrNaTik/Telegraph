@@ -13,7 +13,7 @@ export const AppRouter = () => {
             )
             :
             publicRoutes.map(({path, Component}) => 
-                <Route key={path} path={path} Component={Component} ></Route>    
+                <Route key={path} path={path} element={<Component/>} ></Route>    
             )}
         </Routes>
     )
