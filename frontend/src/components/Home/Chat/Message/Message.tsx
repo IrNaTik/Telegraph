@@ -8,8 +8,6 @@ interface IProp {
 enum Style {
     sender = 'flex-end',
     receiver = 'flex-start'
-
-
 }
 
 export function Message({isSender=false, content}:IProp) {

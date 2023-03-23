@@ -6,14 +6,11 @@
     overflow-y: auto;
     transform: translateZ(0);
     display: flex;
-    flex-direction: column-reverse;
     justify-content: flex-start;
 }
+
 .ChatIns {
     max-width: $--message-container;
     padding: 0 0.8125rem;
-    max-height: 90vh;
-
-
-    
+    max-height: 90vh;    
 } 

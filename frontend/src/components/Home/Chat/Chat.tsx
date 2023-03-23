@@ -12,7 +12,7 @@ export function ChatIns(props: any) {
     useEffect(() => {
         if (isOpen) {
             const elem = document.getElementById("Chat-Scroll")
-            elem!.scrollTop = elem!.scrollHeight
+            elem!.scrollTop = elem!.scrollHeight 
         }
         
     }, [messageList])

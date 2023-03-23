@@ -104,7 +104,7 @@ class UserInstance(BaseDbWorkMixin):
             user_data = user_object.first()
             
 
-        return user_data[0] # Have keys refresh_token and last_visit
+        return user_data # Have keys refresh_token and last_visit
     
     async def get_by_prefix(self, prefix):
         async with AsyncSession(engine) as session:

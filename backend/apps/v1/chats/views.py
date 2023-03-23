@@ -18,7 +18,6 @@ async def websocket_chat(request): # request это что-то по типу sc
 
     ws = web.WebSocketResponse()
     await ws.prepare(request)
-    # await ws.send_json({'type': 'requestForChatId'})
     
     async for msg in ws:
         if msg.type == WSMsgType.TEXT:
