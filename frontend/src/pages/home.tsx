@@ -16,10 +16,10 @@ export default function Home(props: any) {
                 'myUsername': 'Titan',
                 'otherUsername': username
             }})
-                .then(function (response) {
-                    console.log(response)
-                    // setGlobalUsers(response.data)
-                });
+        .then(function (response) {
+            console.log(response)
+            // setGlobalUsers(response.data)
+        });
 
     }
 

@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import axios from "axios";
 
 import Logo from "src/components/common/logo/logo";
 import $api from "src/utils/api/axios";
@@ -15,12 +14,38 @@ interface LoginForm {
 export default function Form(props: any) {
     const inpRef = useRef<HTMLInputElement>(null)
     const inpRef1 = useRef<HTMLInputElement>(null)
+    const [isValid, setIsValid] = useState(false)
     const [form, setForm] = useState<LoginForm>({
         login: "",
         password: ""
     })
 
     function handleForm(e: React.ChangeEvent<HTMLInputElement>) {
+        
+
+        if (e.target.name === 'login') {
+   
+            if (form.login.length < 8) {
+                inpRef.current!.classList.add('Input-MinLenght')
+             }else {
+                setIsValid(true)
+                inpRef.current!.classList.remove('Input-MinLenght')
+            }
+        } 
+
+        if (e.target.name === 'password') {
+
+            if (form.password.length < 4) {
+                inpRef1.current!.classList.add('Input-MinLenght')
+            }else if (form.password.length < 7) {
+                inpRef1.current!.classList.add('Input-MiddleLevel')
+            }else {
+                inpRef1.current!.classList.add('Input-HighLevel')
+                inpRef1.current!.classList.remove('Input-MinLenght')
+            }
+        } 
+        
+
         setForm({ ...form, 
             [e.target.name]: e.target.value
         })
@@ -28,24 +53,23 @@ export default function Form(props: any) {
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        
-        console.log(form)
-        $api.post('http://localhost:8000/login', {data: form})
-        .then((response) => {
+
+        if (isValid) {
+            $api.post('http://localhost:8000/login', form)
+            .then((response) => {
+                localStorage.setItem('token', response.data.AssesToken)
+            })
+
+            setForm({
+                login: '',
+                password: ''
+            })
             
-            localStorage.setItem('token', response.data.AssesToken)
-        })
-        .catch((error) => {
-            console.log('Error')
-        })
-       
-        setForm({
-            login: '',
-            password: ''
-        })
-        
-        inpRef.current!.value = ''
-        inpRef1.current!.value = ''
+            inpRef.current!.value = ''
+            inpRef1.current!.value = ''
+
+            inpRef1.current?.classList.remove('Input-HighLevel')
+        }        
     }
 
     return (
@@ -62,4 +86,4 @@ export default function Form(props: any) {
             </form>
         </div>
     )
-} 
+}

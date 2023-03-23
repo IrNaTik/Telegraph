@@ -21,4 +21,16 @@
     .Title-Form {
         color: $--secondary-text-color;
     }
+
+    .Input-MinLenght {
+        border: 2px solid crimson;
+    }
+
+    .Input-MiddleLevel {
+        border: 2px solid yellow;
+    }
+
+    .Input-HighLevel {
+        border: 2px solid greenyellow;
+    }
 }   

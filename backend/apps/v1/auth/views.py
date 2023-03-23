@@ -4,8 +4,6 @@ import yaml
 from aiohttp import web
 from datetime import datetime, timedelta
 
-from .models import user
-
 from database_work import db_provider
 
 
@@ -13,18 +11,12 @@ from database_work import db_provider
 class AuthView(web.View):
     
     def __init__(self, request: web.Request) -> None:
-
-        self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000',
-                    'Access-Control-Allow-Credentials': 'true'}
-        self.POST = {
-            
-                    }
         self.OPTIONS = {
             'Access-Control-Allow-Origin': 'http://localhost:3000',
             'Access-Control-Allow-Credentials': 'true',
             'Allow': 'OPTIONS, GET, POST',
             'Access-Control-Request-Method': 'POST',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
             'Access-Control-Allow-Headers': '''Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization'''
         }
     
@@ -33,6 +25,7 @@ class AuthView(web.View):
 
         super().__init__(request)
 
+<<<<<<< HEAD
     async def valid_token(self):
         print('Good')
         try:
@@ -86,18 +79,25 @@ class AuthView(web.View):
             return web.json_response(headers=self.OPTIONS, status=401)
         
 
+=======
+>>>>>>> 1d5e0e0ddc8e4da39182bcfce4005b3961150218
 
     async def post(self):
-        # login = self.request.query.get('login')
-        # password = self.request.query.get('password')
-        # check taht pass and login is valid
         resp = await self.request.content.read() 
+<<<<<<< HEAD
         result = json.loads(resp.decode('utf-8'))['data'] # handle error
+=======
+
+
+        result = json.loads(resp.decode('utf-8')) # handle error
+
+>>>>>>> 1d5e0e0ddc8e4da39182bcfce4005b3961150218
 
         print(result)
         login = result['login']
         password = result['password']
         
+<<<<<<< HEAD
         
         user = await db_provider.user.get_user_id_by_login(login) 
         print(user)
@@ -114,6 +114,25 @@ class AuthView(web.View):
         # user = await db_provider.user.get_user_id(login)
         
         user_id = user['user_id']
+=======
+        #only for test
+        # try:
+        #     user_id = await db_provider.user.get_user_id(login) 
+        # except:
+        #     resp = await db_provider.user.add_user(login, password)
+            
+
+        # if  resp['error']:
+        #     if resp['type'] == 'IncorrectFormat':
+        #         pass
+        
+        user = await db_provider.user.get_user_id(login)
+
+        if  not user['error']:
+            user_id = user['user_id']
+        else: 
+            user_id = 1 #handler error
+>>>>>>> 1d5e0e0ddc8e4da39182bcfce4005b3961150218
 
         ATpayload = {
             'user_id': user_id,

@@ -11,6 +11,7 @@ export function ChatIns(props: any) {
     const messageList = useAppSelector(state => state.MessageStore.messages)
 
     useEffect(() => {
+<<<<<<< HEAD
         const arr = window.location.href.split('/')
         const last = arr.length - 1
         
@@ -33,6 +34,11 @@ export function ChatIns(props: any) {
         const elem = document.getElementById("Chat-Scroll")
         if (elem) {
             elem!.scrollTop = elem!.scrollHeight
+=======
+        if (isOpen) {
+            const elem = document.getElementById("Chat-Scroll")
+            elem!.scrollTop = elem!.scrollHeight 
+>>>>>>> 1d5e0e0ddc8e4da39182bcfce4005b3961150218
         }
         
     }, [messageList])
