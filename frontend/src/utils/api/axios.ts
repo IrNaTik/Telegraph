@@ -18,8 +18,14 @@ $api.interceptors.response.use(config => {
     if (error.response.status === 401) {
         $api.post('/api/refresh')
         .then(resp => {
-            localStorage.setItem('token', resp.data.AssesToken)
-            return $api.request(error.config)
+            
+            if (resp) {
+                console.log('Tokens has been updated')
+                localStorage.setItem('token', resp.data.AssesToken)
+                console.log(resp.data.AssesToken)
+                return $api.request(error.config)
+            }
+            
         })
     } 
 }))

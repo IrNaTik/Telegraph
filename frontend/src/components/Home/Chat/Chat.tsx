@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Message } from "./Message/Message";
 import { Controller } from "./Controller/Controller";
 import { useAppSelector } from "src/store/store";
-import $api from "src/api/axios";
+import $api from "src/utils/api/axios";
 
 
 
@@ -11,7 +11,6 @@ export function ChatIns(props: any) {
     const messageList = useAppSelector(state => state.MessageStore.messages)
 
     useEffect(() => {
-<<<<<<< HEAD
         const arr = window.location.href.split('/')
         const last = arr.length - 1
         
@@ -32,14 +31,10 @@ export function ChatIns(props: any) {
 
     useEffect(() => {
         const elem = document.getElementById("Chat-Scroll")
-        elem!.scrollTop = elem!.scrollHeight
-=======
-        if (isOpen) {
-            const elem = document.getElementById("Chat-Scroll")
+        if (elem) {
             elem!.scrollTop = elem!.scrollHeight
         }
         
->>>>>>> 3a0918f2b12d4ac36056e4bd0e388765c27b216d
     }, [messageList])
 
     const OpenChat = <>

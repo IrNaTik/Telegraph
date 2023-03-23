@@ -28,18 +28,17 @@ export default function Form(props: any) {
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-<<<<<<< HEAD
         
         console.log(form)
         $api.post('http://localhost:8000/login', {data: form})
-=======
-
-        $api.post('http://localhost:8000/login', form)
->>>>>>> 3a0918f2b12d4ac36056e4bd0e388765c27b216d
         .then((response) => {
+            
             localStorage.setItem('token', response.data.AssesToken)
         })
-
+        .catch((error) => {
+            console.log('Error')
+        })
+       
         setForm({
             login: '',
             password: ''

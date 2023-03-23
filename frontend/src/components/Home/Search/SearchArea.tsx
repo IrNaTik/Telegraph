@@ -19,8 +19,15 @@ function SearchArea({ changeHref }: PropsInterface) {
                 'headers': {
                     'prefix': prefix
                 }})
+            .catch((error) => {
+                console.log(error)
+            })
             .then(function (response) {
-                setGlobalUsers(response.data)
+                console.log(response)
+                if (response) {
+                    setGlobalUsers(response.data)
+                }
+                // 
             });
         } else {
             setGlobalUsers([])

@@ -62,8 +62,11 @@ async def async_main() -> None:
     # c = await db_provider.chat.get_chat_messages('999_99', 20)
     # print(c)
             
-     
-    
+    names = ['Ignatioooo', 'Andrewwwww', 'Grigoriiiii', 'Igorrrrrr', 'Ivannnnnn']
+    for el in names:
+        a = await db_provider.user.add_user(el, el, el)   
+        print(a)  
+    print('Good')
 
 
 asyncio.run(async_main())

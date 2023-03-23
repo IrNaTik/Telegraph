@@ -34,11 +34,11 @@ class AuthView(web.View):
         super().__init__(request)
 
     async def valid_token(self):
-        
+        print('Good')
         try:
             asess_token = self.request.headers['Authorization']
             asess_token = asess_token.split(' ')[1]
-
+            decoded = False
             try:
                 decoded = jwt.decode(asess_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
                 
@@ -67,6 +67,10 @@ class AuthView(web.View):
                         return False # Required to enter login with passwordу
                     except jwt.InvalidSignatureError:
                         return False
+                    
+            except Exception as e:
+                print('Suck')
+                print(type(e), e)
             
             if decoded:
                 return True      
@@ -79,7 +83,7 @@ class AuthView(web.View):
         if await self.valid_token():
             return web.json_response(headers=self.GET, status=200)  # redirect to home
         else:
-            return web.json_response(headers=self.OPTIONS, status=200)
+            return web.json_response(headers=self.OPTIONS, status=401)
         
 
 
@@ -88,28 +92,28 @@ class AuthView(web.View):
         # password = self.request.query.get('password')
         # check taht pass and login is valid
         resp = await self.request.content.read() 
-        result = json.loads(resp.decode('utf-8')) # handle error
+        result = json.loads(resp.decode('utf-8'))['data'] # handle error
 
-
+        print(result)
         login = result['login']
         password = result['password']
         
-        # #only for test
-        # try:
-        #     user_id = await db_provider.user.get_user_id(login) 
-        # except:
-        resp = await db_provider.user.add_user(login, password)
-        print(resp)
-        if  resp['error']:
-            if resp['type'] == 'IncorrectFormat':
-                pass
         
-        user = await db_provider.user.get_user_id(login)
+        user = await db_provider.user.get_user_id_by_login(login) 
+        print(user)
+        if user['error']:
+            return web.json_response(data={'message': 'User is not defined'},headers=self.OPTIONS ,status=401)
+
         
-        if  not user['error']:
-            user_id = user['user_id']
-        else: 
-            user_id = 1 #handler error
+        # resp = await db_provider.user.add_user(login, password)
+        # print(resp)
+        # if  resp['error']:
+        #     if resp['type'] == 'IncorrectFormat':
+        #         pass
+        
+        # user = await db_provider.user.get_user_id(login)
+        
+        user_id = user['user_id']
 
         ATpayload = {
             'user_id': user_id,

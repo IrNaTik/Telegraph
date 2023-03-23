@@ -12,9 +12,18 @@ export default function Auth(props: any) {
     useEffect (() => {
         $api.get('login',)
         .then((responce) => {
-            if (responce.status === 200) {
-                navigate('/chats')
+            if (responce) {
+                console.log(responce)
+                if (responce.status === 200) {
+                    navigate('/')
+                } else {
+                    console.log('Пошёл нах, Антоха. Ты не авторизован!')
+                }
             }
+            
+        })
+        .catch((error) => {
+            console.log(error)
         })
     },[])
 

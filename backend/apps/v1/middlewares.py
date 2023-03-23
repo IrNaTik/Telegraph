@@ -35,6 +35,7 @@ class Middleware:
         self, request: web.Request, handler: Callable
         ) -> web.Response:
 
+        
         if request.rel_url.path == "/login":               
             return await self.run_handler(request, handler)
         elif  request.rel_url.path == '/ws/chat/':
@@ -46,12 +47,12 @@ class Middleware:
             try:
                 if request.method != 'OPTIONS':
                     user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
-
-            
-                return await self.run_handler(handler=handler, request=request)
+                
+                # return await self.run_handler(request, handler)
+                return await self.run_handler(request, handler)
                 
             except HandlerStatusError as hs:
-            
+                
                 if hs.status == 401:
                     self.status = 401
                     self.body = {
@@ -65,12 +66,12 @@ class Middleware:
                 
                 return web.json_response(data=self.body, status=self.status, headers=self.headers)
             
-            except Exception as e:
-                self.status = 500
-                self.body = self.get_error_body(e)
-                print(e)  
+            # except Exception as e:
+            #     self.status = 500
+            #     self.body = self.get_error_body(e)
+            #     print(e)  
 
-                return web.json_response(data=self.body, status=self.status, headers=self.headers)
+            #     return web.json_response(data=self.body, status=self.status, headers=self.headers)
 
 
 class Token:
@@ -91,8 +92,10 @@ class Token:
             print("exp time")
             raise HandlerStatusError(401)
         except jwt.InvalidSignatureError:
-
             raise HandlerStatusError(404)
+        except jwt.DecodeError: # If Authorization is real invalid or underfuned
+            raise HandlerStatusError(404)
+        
         
 # move to a separate module
 #exmpl: https://github.com/encode/django-rest-framework/blob/19655edbf782aa1fbdd7f8cd56ff9e0b7786ad3c/rest_framework/exceptions.py#L140
