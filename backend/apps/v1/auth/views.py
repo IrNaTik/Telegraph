@@ -28,6 +28,7 @@ class AuthView(web.View):
 
     async def post(self):
         resp = await self.request.content.read() 
+
         result = json.loads(resp.decode('utf-8')) # handle error
 
 
@@ -38,14 +39,14 @@ class AuthView(web.View):
         # try:
         #     user_id = await db_provider.user.get_user_id(login) 
         # except:
-        resp = await db_provider.user.add_user(login, password)
-        print(resp)
+        # resp = await db_provider.user.add_user(login, password)
+
         if  resp['error']:
             if resp['type'] == 'IncorrectFormat':
                 pass
         
         user = await db_provider.user.get_user_id(login)
-        
+
         if  not user['error']:
             user_id = user['user_id']
         else: 
