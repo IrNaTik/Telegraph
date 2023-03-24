@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 from sqlalchemy import exc
 from .serializers import *
+from datetime import datetime
+
 
 __all__ = 'db_provider'
 class BaseDbWorkMixin():
@@ -140,13 +142,25 @@ class ChatInstance():
         user2_id = await db_provider.user.get_user_id_by_login(user2_login)
         
 
-        if user1_id['error'] or user1_id['error']:
+        if user1_id['error']:
             return user1_id
+        if user2_id['error']:
+            return user2_id
+        
+        async with AsyncSession(engine) as session:
+            statement = text(f"""SELECT * FROM chat_instance WHERE (user_1 = '{user1_id['user_id']}' AND user_2 = '{user2_id['user_id']}') OR (user_1 = '{user2_id['user_id']}' AND user_2 = '{user1_id['user_id']}')""")
+            print(statement)
+            response = await BaseDbWorkMixin._execute_statement(statement, session)
+            if response['error']:
+                return response
+
+        if response['error']:
+            return response
         
         print(user1_id, user2_id)
         
         # Creating Chat_Instance
-        response = await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id['user_id'], 'user_2': user2_id['user_id'], 'unreaden_message_id': 0})
+        response = await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id['user_id'], 'user_2': user2_id['user_id'], 'date': str(datetime.utcnow())})
 
         if response['error']:
             return response
@@ -176,7 +190,7 @@ class ChatInstance():
 
         if not message.is_valid:
             return message.error_data
-        response = await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id['user_id'], 'content': content})
+        response = await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id['user_id'], 'content': content, 'date': str(datetime.utcnow()), 'is_readen': False})
         return response
         
     async def get_user_chats(self, user_login):

@@ -4,13 +4,15 @@ import sqlalchemy as sa
 from .base import Base
 from .user import User
 
+from datetime import datetime
+
 class Chat_Instance(Base):
     __tablename__ = 'chat_instance'
 
     chat_id = sa.Column('chat_id', sa.Integer, primary_key=True)
     user_1 = sa.Column('user_1', sa.Integer, sa.ForeignKey('user.user_id'), nullable=False) 
     user_2 = sa.Column('user_2', sa.Integer, sa.ForeignKey('user.user_id'), nullable=False)
-    unreaden_message_id = sa.Column('unreaden_message_id', sa.TEXT, nullable=False)
+    date = sa.Column('date', sa.TEXT, nullable=False)
 
 
 async def create_chat_messages_table(table_name, metadata, engine):
@@ -18,7 +20,9 @@ async def create_chat_messages_table(table_name, metadata, engine):
         table_object = sa.Table(table_name, metadata, 
                                 sa.Column('message_id', sa.Integer, primary_key=True, nullable=False),
                                 sa.Column('sender_id', sa.ForeignKey('user.user_id'), nullable=False),
-                                sa.Column('content', sa.TEXT, nullable=False))
+                                sa.Column('content', sa.TEXT, nullable=False),
+                                sa.Column('date', sa.TEXT, nullable=False), 
+                                sa.Column('is_readen', sa.BOOLEAN, nullable=False))
         async with engine.begin() as conn:
             await conn.run_sync(metadata.create_all)
         return {'error': False}
