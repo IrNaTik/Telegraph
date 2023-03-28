@@ -27,15 +27,26 @@ class TokenView(web.View):
         super().__init__(request)
 
     async def post(self):
-        try: 
-            cookies = self.request.headers['Cookie']
-            refr = cookies[cookies.find('Ref')+4:]
-        except KeyError:
-            print("cookie is not aviable")
         
+        cookies = self.request.headers['Cookie']
+        
+        if 'Ref'in cookies:
+            refr = cookies[cookies.find('Ref')+4:]
+        else: 
+            print('No refresh token in cookie')
+            return web.json_response(data={'message': 'cookie is not avaible'}, status=404, headers=self.OPTIONS)   
+        # except KeyError:
+        #     print("cookie is not aviable")
+        #     return web.json_response(data={'message': 'cookie is not avaible'}, status=300, headers=self.OPTIONS)    
+        
+        print(refr)
+
+        # Ещё нужен try для невалидных токенов
         decoded = jwt.decode(refr, self.JWT_CONF['RTsecret'], algorithms=['HS256']) # if error raise 403 
+        print(decoded)
         user_id = decoded.get('user_id')
         
+        print(user_id)
         user_data = await db_provider.user.get_access_data_table(user_id=user_id)
         date = datetime.utcnow() # must have date type
          

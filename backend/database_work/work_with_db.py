@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 from sqlalchemy import exc
 from .serializers import *
+from datetime import datetime
+
 
 __all__ = 'db_provider'
 class BaseDbWorkMixin():
@@ -37,17 +39,21 @@ class BaseDbWorkMixin():
 
 
 class UserInstance(BaseDbWorkMixin):
-    async def add_user(self, login, password):  
+    async def add_user(self, login, password, username):  
         new_user = UserSerializer(login, password)
 
         if new_user.is_valid:
             user = await BaseDbWorkMixin._add('user', {'login': login, 'password': password})
             print(user)
             if not user['error']: 
-                user_id = await db_provider.user.get_user_id(login)
+                user_id = await db_provider.user.get_user_id_by_login(login)
                 await BaseDbWorkMixin._add('user_access_data', {'user_id': user_id['user_id'], 'last_visit': 'null', 'refresh_token': 'null'})
-                await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id['user_id'], 'username': 'null', 'description': 'null'})
-                return {'error': False, 'user_id': user_id}
+                resp = await BaseDbWorkMixin._add('user_parametres', {'user_id': user_id['user_id'], 'username': username, 'description': 'null'})
+
+                if not resp['error']:
+                    return {'error': False, 'user_id': user_id}
+                else:
+                    return resp
             else:
                 return user
             
@@ -55,7 +61,7 @@ class UserInstance(BaseDbWorkMixin):
         
 
 
-    async def get_user_id(self, login):
+    async def get_user_id_by_login(self, login):
         async with AsyncSession(engine) as session:
             try:
                 statement = text(f"""SELECT * FROM user WHERE login = '{login}' """)
@@ -65,6 +71,17 @@ class UserInstance(BaseDbWorkMixin):
                 return {'error': False, 'user_id': user_id}
             except AttributeError:
                 return {'error': True, 'type': 'AttributeArror', 'message': 'No user with such login'}
+            
+    async def get_user_id_by_username(self, username):
+        async with AsyncSession(engine) as session:
+            try:
+                statement = text(f"""SELECT * FROM user_parametres WHERE username = '{username}' """)
+                user_object = await session.execute(statement)
+                
+                user_id = user_object.first().user_id
+                return {'error': False, 'user_id': user_id}
+            except AttributeError:
+                return {'error': True, 'type': 'AttributeArror', 'message': 'No user with such username'}
             
         
     
@@ -121,17 +138,29 @@ class UserInstance(BaseDbWorkMixin):
 class ChatInstance():
     async def add_chat(self, user1_login, user2_login):
         
-        user1_id = await db_provider.user.get_user_id(user1_login)
-        user2_id = await db_provider.user.get_user_id(user2_login)
+        user1_id = await db_provider.user.get_user_id_by_login(user1_login)
+        user2_id = await db_provider.user.get_user_id_by_login(user2_login)
         
 
-        if user1_id['error'] or user1_id['error']:
+        if user1_id['error']:
             return user1_id
+        if user2_id['error']:
+            return user2_id
+        
+        async with AsyncSession(engine) as session:
+            statement = text(f"""SELECT * FROM chat_instance WHERE (user_1 = '{user1_id['user_id']}' AND user_2 = '{user2_id['user_id']}') OR (user_1 = '{user2_id['user_id']}' AND user_2 = '{user1_id['user_id']}')""")
+            print(statement)
+            response = await BaseDbWorkMixin._execute_statement(statement, session)
+            if response['error']:
+                return response
+
+        if response['error']:
+            return response
         
         print(user1_id, user2_id)
         
         # Creating Chat_Instance
-        response = await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id['user_id'], 'user_2': user2_id['user_id'], 'unreaden_message_id': 0})
+        response = await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id['user_id'], 'user_2': user2_id['user_id'], 'date': str(datetime.utcnow())})
 
         if response['error']:
             return response
@@ -150,8 +179,8 @@ class ChatInstance():
         return response
 
 
-    async def add_message(self, table_name, sender_login, content):
-        sender_id = await db_provider.user.get_user_id(sender_login)
+    async def add_message(self, table_name, sender_username, content):
+        sender_id = await db_provider.user.get_user_id_by_username(sender_username)
 
         if sender_id['error']:
             return sender_id
@@ -161,11 +190,11 @@ class ChatInstance():
 
         if not message.is_valid:
             return message.error_data
-        response = await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id['user_id'], 'content': content})
+        response = await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id['user_id'], 'content': content, 'date': str(datetime.utcnow()), 'is_readen': False})
         return response
         
     async def get_user_chats(self, user_login):
-        user_id = await db_provider.user.get_user_id(user_login)
+        user_id = await db_provider.user.get_user_id_by_login(user_login)
 
         if user_id['error']:
             return user_id

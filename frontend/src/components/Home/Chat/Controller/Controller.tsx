@@ -16,13 +16,24 @@ export function Controller(props:any) {
     const { sendJsonMessage } = useWebSocket(decodeURI(WS_URL), {
         onOpen: () => {
 
-        //   const chatId = window.location.pathname.split('/').pop()
-        const chatId = 1   
-        sendJsonMessage({
-            'type': 'chatId',
-            'chatId': chatId
-          })    
-        },
+            const arr = window.location.href.split('/')
+            const last = arr.length - 1
+            
+            if (arr[last]) {
+                console.log('good')
+                sendJsonMessage({
+                    'type': 'chatBegin',
+                    'personUsername': arr[last],
+                    'myUsername': 'Ignat' // Здесь должны быть данные из storage
+                })
+            } else {
+                console.log('User is not choosen')
+            }
+                
+            
+
+        }
+        ,
         onMessage: (response) => {
           const data = JSON.parse(response.data) 
           
