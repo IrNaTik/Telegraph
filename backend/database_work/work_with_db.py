@@ -183,7 +183,8 @@ class ChatInstance():
             return chat_objects
         
     
-    async def get_chat_messages(self, table_name, message_id): # Возвращает 25 сообщений, начиная с определённого
+    async def get_chat_messages(self, table_name: str, limit: int, offset: int) -> None: # Возвращает 25 сообщений, начиная с определённого
+        
         async with AsyncSession(engine) as session:
             
             statement = text(f'''SELECT * FROM '{table_name}' ORDER BY message_id DESC LIMIT 1;''')
@@ -197,10 +198,11 @@ class ChatInstance():
             last_message_id = last_message_id.message_id
             print(last_message_id)
 
-            statement = text(f'''SELECT * from '{table_name}' WHERE message_id <= {last_message_id - message_id+1}  ORDER BY message_id DESC
+            statement = text(f'''SELECT * from '{table_name}' WHERE message_id <= {last_message_id - message_id + 1}  ORDER BY message_id DESC
                                    LIMIT 5;''')
 
             print(statement) 
+
             response = await BaseDbWorkMixin._execute_statement(statement, session)
             if response['error']:
                 return response

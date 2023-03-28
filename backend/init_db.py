@@ -22,7 +22,7 @@ async def async_main() -> None:
     await db_provider.create_tables()
 
     
-    alphabet = list(string.ascii_lowercase)
+    # alphabet = list(string.ascii_lowercase)
 
     # user_id = await db_provider.user.get_user_id('500000')
     # print(user_id , datetime.now() - start_time)
