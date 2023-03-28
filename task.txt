@@ -9,3 +9,5 @@ set sender to message
 когда делается запрос на сервер воз
 
 обработчие ошибок на websockets
+
+login post headers

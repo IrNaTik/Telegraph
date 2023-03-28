@@ -1,7 +1,9 @@
 import jwt
 import json
 import yaml
+
 from aiohttp import web
+from backend.apps.logics.headers import LOGIN_OPTIONS
 from datetime import datetime, timedelta
 
 from database_work import db_provider
@@ -11,14 +13,6 @@ from database_work import db_provider
 class AuthView(web.View):
     
     def __init__(self, request: web.Request) -> None:
-        self.OPTIONS = {
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
-            'Access-Control-Allow-Credentials': 'true',
-            'Allow': 'OPTIONS, GET, POST',
-            'Access-Control-Request-Method': 'POST',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': '''Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization'''
-        }
     
         with open('config/jwt.yaml') as f:
             self.JWT_CONF = yaml.safe_load(f)
@@ -75,7 +69,7 @@ class AuthView(web.View):
             'AssesToken': jwt_token
         }
         
-        resp = web.json_response(data=value, headers=self.OPTIONS)
+        resp = web.json_response(data=value, headers=LOGIN_OPTIONS)
         resp.set_cookie(name="Ref", value=refresh_token, httponly=True ,
                         max_age=self.JWT_CONF['exp_refresh'] * 60)
 
@@ -83,5 +77,5 @@ class AuthView(web.View):
 
 
     async def options(self):
-        return web.Response(headers=self.OPTIONS)
+        return web.Response(headers=LOGIN_OPTIONS)
 
