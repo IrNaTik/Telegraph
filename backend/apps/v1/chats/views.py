@@ -113,6 +113,7 @@ class GetChatWithUser(web.View):
         super().__init__(request)
 
     async def get(self):
+<<<<<<< HEAD
         # prefix = self.request.headers
         # users = await db_provider.user.get_by_prefix(prefix)
         # logins = [user.login for user in users]
@@ -123,6 +124,11 @@ class GetChatWithUser(web.View):
         print(username)
 
         return web.json_response(data={1: 2}, headers=self.GET, status=200) 
+=======
+        
+        print(self)
+        return web.json_response(data={1,2}, headers=self.GET, status=200) 
+>>>>>>> 377e2d3e21686852ea86d14c4e2cee15b00d6676
             
 
     async def options(self):

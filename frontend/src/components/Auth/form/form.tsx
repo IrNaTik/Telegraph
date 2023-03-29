@@ -4,6 +4,8 @@ import Logo from "src/components/common/logo/logo";
 import $api from "src/utils/api/axios";
 import { NavLink } from "react-router-dom";
 import { CHATS_ROUTE } from "src/utils/consts";
+import { useAppDispatch } from "src/store/store";
+import { setUsername } from "src/store/Auth";
 
 interface LoginForm {
     login: string,
@@ -19,6 +21,7 @@ export default function Form(props: any) {
         login: "",
         password: ""
     })
+    const disp = useAppDispatch()
 
     function handleForm(e: React.ChangeEvent<HTMLInputElement>) {
         
@@ -55,11 +58,13 @@ export default function Form(props: any) {
         e.preventDefault()
 
         if (isValid) {
-            console.log(form);
+
             $api.post('http://localhost:8000/login', form)
             .then((response) => {
                 localStorage.setItem('token', response.data.AssesToken)
             })
+
+            disp(setUsername(form.login))
 
             setForm({
                 login: '',

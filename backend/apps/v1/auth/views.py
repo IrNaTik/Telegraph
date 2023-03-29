@@ -1,7 +1,9 @@
 import jwt
 import json
 import yaml
+
 from aiohttp import web
+from apps.logics.headers import LOGIN_OPTIONS
 from datetime import datetime, timedelta
 
 # from .models import user
@@ -13,20 +15,6 @@ from database_work import db_provider
 class AuthView(web.View):
     
     def __init__(self, request: web.Request) -> None:
-
-        self.GET = {'Access-Control-Allow-Origin': 'http://localhost:3000',
-                    'Access-Control-Allow-Credentials': 'true'}
-        self.POST = {
-            
-                    }
-        self.OPTIONS = {
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
-            'Access-Control-Allow-Credentials': 'true',
-            'Allow': 'OPTIONS, GET, POST',
-            'Access-Control-Request-Method': 'POST',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-            'Access-Control-Allow-Headers': '''Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization'''
-        }
     
         with open('config/jwt.yaml') as f:
             self.JWT_CONF = yaml.safe_load(f)
@@ -34,10 +22,11 @@ class AuthView(web.View):
         super().__init__(request)
 
     async def valid_token(self):
-        print('Good')
+
         try:
             asess_token = self.request.headers['Authorization']
             asess_token = asess_token.split(' ')[1]
+            
             decoded = False
             try:
                 decoded = jwt.decode(asess_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
@@ -88,36 +77,28 @@ class AuthView(web.View):
 
 
     async def post(self):
+<<<<<<< HEAD
         # password = self.request.query.get('password')
         # check taht pass and login is valid
         
         resp = await self.request.content.read()
         print(resp)
         result = json.loads(resp.decode('utf-8')) # handle error
+=======
+        
+        resp = await self.request.content.read()  
+        result = json.loads(resp.decode('utf-8')) 
+>>>>>>> 377e2d3e21686852ea86d14c4e2cee15b00d6676
 
-
-
-        print(result)
-        login = result['login']
-        print(result)
         login = result['login']
         password = result['password']
         
-        
+        user = await db_provider.user.add_user(login, password, "Ignat")        
         user = await db_provider.user.get_user_id_by_login(login) 
         print(user)
         if user['error']:
-            return web.json_response(data={'message': 'User is not defined'},headers=self.OPTIONS ,status=401)
+            return web.json_response(data={'message': 'User is not defined'},headers=LOGIN_OPTIONS, status=401)
 
-        
-        # resp = await db_provider.user.add_user(login, password)
-        # print(resp)
-        # if  resp['error']:
-        #     if resp['type'] == 'IncorrectFormat':
-        #         pass
-        
-        # user = await db_provider.user.get_user_id(login)
-        
         user_id = user['user_id']
         ATpayload = {
             'user_id': user_id,
@@ -140,7 +121,7 @@ class AuthView(web.View):
             'AssesToken': jwt_token
         }
         
-        resp = web.json_response(data=value, headers=self.OPTIONS)
+        resp = web.json_response(data=value, headers=LOGIN_OPTIONS)
         resp.set_cookie(name="Ref", value=refresh_token, httponly=True ,
                         max_age=self.JWT_CONF['exp_refresh'] * 60)
 
@@ -148,5 +129,5 @@ class AuthView(web.View):
 
 
     async def options(self):
-        return web.Response(headers=self.OPTIONS)
+        return web.Response(headers=LOGIN_OPTIONS)
 
