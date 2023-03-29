@@ -23,11 +23,13 @@ class Middleware:
         if request.rel_url.path == '/login' or request.rel_url.path == '/api/refresh':
             return await handler(request)
         else:
+            
             try:
+                print(request)
                 if request.method != 'OPTIONS':
                     user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
-
-
+                print(request)
+                
                 return await handler(request)
 
             except HandlerStatusError as hs:

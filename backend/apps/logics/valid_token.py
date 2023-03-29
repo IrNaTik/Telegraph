@@ -12,8 +12,12 @@ class Token:
 
     async def check_jwt_token(self, request):
         try:
-
-            asses_token = request.headers['Authorization'].split(' ')[1]
+            if 'ws' in str(request):
+                print(request.query)
+                asses_token = request.query['Authorization']
+                print(asses_token)
+            else:
+                asses_token = request.headers['Authorization'].split(' ')[1]
             decoded = jwt.decode(asses_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
             
             return decoded.get('user_id') 
@@ -23,5 +27,9 @@ class Token:
         except jwt.InvalidSignatureError:
 
             raise HandlerStatusError(404)
+        except jwt.DecodeError:
+            print('dsadas')
+            # raise HandlerStatusError(404)
+
 
     

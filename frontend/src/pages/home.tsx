@@ -16,9 +16,8 @@ export default function Home({ myUsername }: any) {
     const [getterUsername, setGetterUsername] = useState('')
 
     const WS_URL = 'ws://localhost:8000/ws/chat/' // Подключение к сокету
-    
 
-    const { sendJsonMessage } = useWebSocket(decodeURI(WS_URL) + "?username=" + myUsername, {
+    const { sendJsonMessage } = useWebSocket(decodeURI(WS_URL) + "?username=" + myUsername + "&Authorization=" + `Bearer ${localStorage.getItem('token')}`,{
         // onOpen: () => {
 
         //     const arr = window.location.href.split('/')
@@ -49,6 +48,9 @@ export default function Home({ myUsername }: any) {
             dispatch(MessageSlice.actions.add({'username': data.senderUsername, 'message': data.message} ))
           }
           
+        },
+        onError: (error) => {
+            console.log(error)
         }
       });
     

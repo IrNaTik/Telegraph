@@ -77,18 +77,9 @@ class AuthView(web.View):
 
 
     async def post(self):
-<<<<<<< HEAD
-        # password = self.request.query.get('password')
-        # check taht pass and login is valid
-        
-        resp = await self.request.content.read()
-        print(resp)
-        result = json.loads(resp.decode('utf-8')) # handle error
-=======
         
         resp = await self.request.content.read()  
         result = json.loads(resp.decode('utf-8')) 
->>>>>>> 377e2d3e21686852ea86d14c4e2cee15b00d6676
 
         login = result['login']
         password = result['password']
