@@ -5,7 +5,7 @@ import $api from "src/utils/api/axios";
 import { NavLink } from "react-router-dom";
 import { CHATS_ROUTE } from "src/utils/consts";
 import { useAppDispatch } from "src/store/store";
-import { setUsername } from "src/store/Auth";
+import { setUsername, update } from "src/store/Auth";
 
 interface LoginForm {
     login: string,
@@ -63,7 +63,7 @@ export default function Form(props: any) {
             .then((response) => {
                 localStorage.setItem('token', response.data.AssesToken)
             })
-
+            disp(update())
             disp(setUsername(form.login))
 
             setForm({
