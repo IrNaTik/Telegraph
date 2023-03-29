@@ -9,18 +9,23 @@ class Middleware:
         self.status = 500
         self.body = {}
 
+    def get_error_body(self, e: Exception):
+        return {
+            'error': f'during program error occupated: {e}'
+        }
+
     @web.middleware
     async def midlleware(self, request: web.Request, handler: Callable) -> web.Response:
 
         if request.rel_url.path == '/login' or request.rel_url.path == '/api/refresh':
-            return handler(request)
+            return await handler(request)
         else:
             try:
                 if request.method != 'OPTIONS':
                     user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
 
 
-                return await self.run_handler(handler=handler, request=request)
+                return await handler(request)
 
             except HandlerStatusError as hs:
 

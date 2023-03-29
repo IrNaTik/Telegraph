@@ -12,12 +12,7 @@ class Chat_Instance(Base):
     chat_id = sa.Column('chat_id', sa.Integer, primary_key=True)
     user_1 = sa.Column('user_1', sa.Integer, sa.ForeignKey('user.user_id'), nullable=False) 
     user_2 = sa.Column('user_2', sa.Integer, sa.ForeignKey('user.user_id'), nullable=False)
-<<<<<<< HEAD
-    message_id = sa.Column('message_id', sa.TEXT, nullable=False) 
-    time = sa.Column('date', sa.DateTime, nullable=False)
-=======
     date = sa.Column('date', sa.TEXT, nullable=False)
->>>>>>> da1517b14acd62ce4c5bc2ca15edd2c808aada16
 
 
 async def create_chat_messages_table(table_name, metadata, engine):

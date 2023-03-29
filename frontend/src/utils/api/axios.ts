@@ -22,10 +22,8 @@ $api.interceptors.response.use(config => {
             if (resp) {
                 console.log('Tokens has been updated')
                 localStorage.setItem('token', resp.data.AssesToken)
-                console.log(resp.data.AssesToken)
                 return $api.request(error.config)
-            }
-            
+            }     
         })
     } 
 }))

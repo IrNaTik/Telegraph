@@ -1,9 +1,6 @@
 import React, { useEffect } from "react";
 import {  useNavigate } from "react-router";
-
 import Form from "../components/Auth/form/form";
-
-import $api from "src/utils/api/axios";
 import { useAppSelector } from "src/store/store";
 
 

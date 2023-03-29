@@ -3,7 +3,7 @@ import json
 import yaml
 
 from aiohttp import web
-from backend.apps.logics.headers import LOGIN_OPTIONS
+from apps.logics.headers import LOGIN_OPTIONS
 from datetime import datetime, timedelta
 
 # from .models import user
@@ -22,10 +22,11 @@ class AuthView(web.View):
         super().__init__(request)
 
     async def valid_token(self):
-        print('Good')
+
         try:
             asess_token = self.request.headers['Authorization']
             asess_token = asess_token.split(' ')[1]
+            
             decoded = False
             try:
                 decoded = jwt.decode(asess_token, self.JWT_CONF['ATsecret'], algorithms=["HS256"])
@@ -76,35 +77,19 @@ class AuthView(web.View):
 
 
     async def post(self):
-        # password = self.request.query.get('password')
-        # check taht pass and login is valid
-        resp = await self.request.content.read() 
-        resp = await self.request.content.read() 
-        result = json.loads(resp.decode('utf-8'))['data'] # handle error
+        
+        resp = await self.request.content.read()  
+        result = json.loads(resp.decode('utf-8')) 
 
-
-
-        print(result)
-        login = result['login']
-        print(result)
         login = result['login']
         password = result['password']
         
-        
+        user = await db_provider.user.add_user(login, password, "Ignat")        
         user = await db_provider.user.get_user_id_by_login(login) 
         print(user)
         if user['error']:
-            return web.json_response(data={'message': 'User is not defined'},headers=self.OPTIONS ,status=401)
+            return web.json_response(data={'message': 'User is not defined'},headers=LOGIN_OPTIONS, status=401)
 
-        
-        # resp = await db_provider.user.add_user(login, password)
-        # print(resp)
-        # if  resp['error']:
-        #     if resp['type'] == 'IncorrectFormat':
-        #         pass
-        
-        # user = await db_provider.user.get_user_id(login)
-        
         user_id = user['user_id']
         ATpayload = {
             'user_id': user_id,
