@@ -4,6 +4,7 @@ from aiohttp import  web
 from yaml import safe_load
 from typing import Callable, Any, Union
 
+from .chats import views
 
 from database_work.work_with_db import db_provider
 
@@ -35,13 +36,15 @@ class Middleware:
         self, request: web.Request, handler: Callable
         ) -> web.Response:
 
-        
         if request.rel_url.path == "/login":               
             return await self.run_handler(request, handler)
         elif  request.rel_url.path == '/ws/chat/':
             return await self.run_handler(request, handler)
         elif  request.rel_url.path == '/api/refresh':
             return await self.run_handler(request, handler)
+        elif  request.rel_url.path == '/get-chat-existing/':
+            return await views.get_chat_existing(request)
+            # return web.json_response(data={1: 2}, status=200)
         else:
             
             try:

@@ -136,19 +136,9 @@ class UserInstance(BaseDbWorkMixin):
 
 
 class ChatInstance():
-    async def add_chat(self, user1_login, user2_login):
-        
-        user1_id = await db_provider.user.get_user_id_by_login(user1_login)
-        user2_id = await db_provider.user.get_user_id_by_login(user2_login)
-        
-
-        if user1_id['error']:
-            return user1_id
-        if user2_id['error']:
-            return user2_id
-        
+    async def add_chat(self, user1_id, user2_id):
         async with AsyncSession(engine) as session:
-            statement = text(f"""SELECT * FROM chat_instance WHERE (user_1 = '{user1_id['user_id']}' AND user_2 = '{user2_id['user_id']}') OR (user_1 = '{user2_id['user_id']}' AND user_2 = '{user1_id['user_id']}')""")
+            statement = text(f"""SELECT * FROM chat_instance WHERE (user_1 = '{user1_id}' AND user_2 = '{user2_id}') OR (user_1 = '{user2_id}' AND user_2 = '{user1_id}')""")
             print(statement)
             response = await BaseDbWorkMixin._execute_statement(statement, session)
             if response['error']:
@@ -157,25 +147,28 @@ class ChatInstance():
         if response['error']:
             return response
         
-        print(user1_id, user2_id)
         
-        # Creating Chat_Instance
-        response = await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id['user_id'], 'user_2': user2_id['user_id'], 'date': str(datetime.utcnow())})
+        obj = response['response'].first()
+        # print(obj.user_1, obj.user_2)
 
-        if response['error']:
+        # if (obj.user_1 == user1_id and obj.user_2 == user2_id) or (obj.user_1 == user2_id and obj.user_2 == user1_id):
+        #     return {'error': False, 'isNewChat': False}
+            
+        if obj == None:
+            # Creating Chat_Instance
+            response = await BaseDbWorkMixin._add('chat_instance', {'user_1': user1_id, 'user_2': user2_id, 'date': str(datetime.utcnow())})
+            if response['error']:
+                return response
+            print(response)
+
+            # Creating Chat_Messages table
+            chat_name = (str(user1_id) + '_' + str(user2_id)).lower()
+            await create_chat_messages_table(chat_name, metadata, engine)
+
+            response['isNewChat'] = True
             return response
-
-        # Creating Chat_Messages table
-        chat_name = (str(user1_login) + '_' + str(user2_login)).lower()
-        await create_chat_messages_table(chat_name, metadata, engine)
-
-        # Creating Pagination_table 
-        # table_name = ('pagination_' + str(user1_login) + '_' + str(user2_login)).lower()
-        # await create_chat_messages_pagination_table(table_name, metadata, engine)
-        # await BaseDbWorkMixin._add(table_name, {'user_id': user1_id, 'message_id': 0}) # If message_id = 0 it means that it is last message
-        # await BaseDbWorkMixin._add(table_name, {'user_id': user2_id, 'message_id': 0})
-
-        print(response, 154)
+        
+        response['isNewChat'] = False 
         return response
 
 
@@ -193,8 +186,8 @@ class ChatInstance():
         response = await BaseDbWorkMixin._add(table_name, {'sender_id': sender_id['user_id'], 'content': content, 'date': str(datetime.utcnow()), 'is_readen': False})
         return response
         
-    async def get_user_chats(self, user_login):
-        user_id = await db_provider.user.get_user_id_by_login(user_login)
+    async def get_user_chats(self, username):
+        user_id = await db_provider.user.get_user_id_by_username(username)
 
         if user_id['error']:
             return user_id
@@ -237,6 +230,8 @@ class ChatInstance():
             messages = response['response'].all()
 
             return messages
+        
+        
 
 class WorkWithDatabase():
     def __init__(self) -> None:

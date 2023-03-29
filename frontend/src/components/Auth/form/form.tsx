@@ -55,6 +55,7 @@ export default function Form(props: any) {
         e.preventDefault()
 
         if (isValid) {
+            console.log(form);
             $api.post('http://localhost:8000/login', form)
             .then((response) => {
                 localStorage.setItem('token', response.data.AssesToken)

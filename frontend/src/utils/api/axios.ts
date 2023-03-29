@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useEffect } from "react";
+import UserSlice from "src/store/Auth";
 
 
 const $api = axios.create({

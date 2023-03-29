@@ -9,7 +9,8 @@ const MessageSlice = createSlice({
     initialState,
     reducers: {
         add(state, actions) {
-            state.messages.push(actions.payload)
+            console.log(actions.payload)
+            state.messages.push(actions.payload.username + ': ', actions.payload.message)
         }
     }
 })

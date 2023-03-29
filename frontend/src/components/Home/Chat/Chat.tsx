@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Message } from "./Message/Message";
 import { Controller } from "./Controller/Controller";
 import { useAppSelector } from "src/store/store";
@@ -6,9 +6,10 @@ import $api from "src/utils/api/axios";
 
 
 
-export function ChatIns(props: any) {
+export function ChatIns({myUsername, sendJsonMessage }: any) {
     const isOpen = useAppSelector(state => state.ChatStore.isOpen)
     const messageList = useAppSelector(state => state.MessageStore.messages)
+    
 
     useEffect(() => {
         if (isOpen) {
@@ -18,13 +19,16 @@ export function ChatIns(props: any) {
         
     }, [messageList])
 
+    
+
     const OpenChat = <>
         <div className="Chat-Scrollable" id="Chat-Scroll">
+            
             <div className="ChatIns" >
                 {messageList.length > 0 ? messageList.map((str, idx) => <Message key={idx}  content={str} isSender={true}/>) : null} 
             </div>
         </div>
-            <Controller/>
+            <Controller myUsername={ myUsername } sendJsonMessage={ sendJsonMessage }/>
     </>
 
 
