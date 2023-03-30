@@ -33,7 +33,7 @@ export function Controller({ myUsername, sendJsonMessage }: PropsInterface) {
                     // $api.get('http://127.0.0.1:8000/get-chat-messages/?username=' + arr[last] + '&myUsername=' + myUsername)
                     // .then((response) => {
                     //     const data = response.data
-                    //     console.log(data)
+                    //     console.log(data)k
                         
                     // })
                 }

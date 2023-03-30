@@ -1,8 +1,7 @@
-from .views import websocket_chat, GetChatWithUser, get_chat_existing
+from aiohttp import web
+from .views import websocket_chat, ChatPagination
 
 
-def urlpatterns(app):
-    # app.router.add_get('/ws/chat/{chat_id:.*}', websocket_chat)
+def urlpatterns(app: web.Application):
     app.router.add_get('/ws/chat/', websocket_chat)
-    app.router.add_get('/get-chat-existing', get_chat_existing )
-    
+    app.add_routes([web.view('/message', ChatPagination)])

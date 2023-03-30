@@ -1,5 +1,5 @@
 from aiohttp import web
-import aiohttp_debugtoolbar  #debug 
+import aiohttp_debugtoolbar  # debug
 
 # from init_db import pg_context
 from apps.settings import config
@@ -9,13 +9,12 @@ from apps.v1.middlewares import Middleware
 
 
 def setup_routes(application):
-    urlpatterns(application)  
+    urlpatterns(application)
 
 
 def setup_middlewares(app):
     mdw = Middleware()
     app.middlewares.append(mdw.midlleware)
-    
 
 
 def setup_external_libraries(application: web.Application) -> None:
@@ -23,11 +22,12 @@ def setup_external_libraries(application: web.Application) -> None:
     aiohttp_debugtoolbar.setup(application)
     # application.cleanup_ctx.append(pg_context)
 
+
 def setup_app(application):
     setup_middlewares(application)
-    setup_external_libraries(application)  
-    setup_routes(application) 
-    
+    setup_external_libraries(application)
+    setup_routes(application)
+
 
 app = web.Application()
 

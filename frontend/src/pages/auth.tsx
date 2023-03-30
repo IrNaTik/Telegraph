@@ -10,9 +10,9 @@ export default function Auth(props: any) {
     
     useEffect(() => {
         if (isAuth) {
-            navigate('/')
+            navigate('/') 
         }
-    }, []) 
+    }, [isAuth]) 
 
     return(
         <div className="Auth">

@@ -1,7 +1,6 @@
 from .exceptions import *
 
 
-
 class BaseSerializer():
     def __init__(self, values: list) -> None:
         self.is_valid = True
@@ -23,14 +22,16 @@ class BaseSerializer():
         for el in self.values:
             if type(el[0]) != el[1]:
                 self.is_valid = False
-                raise IncorrectTypes(f'Incompatible types of "{el[2]}": {type(el[0])} and {el[1]}')
+                raise IncorrectTypes(
+                    f'Incompatible types of "{el[2]}": {type(el[0])} and {el[1]}')
                 break
-        
+
 
 class UserSerializer(BaseSerializer):
     def __init__(self, login, password) -> None:
         try:
-            super().__init__([[login, str, 'login'], [password, str, 'password']])
+            super().__init__(
+                [[login, str, 'login'], [password, str, 'password']])
 
             if self.is_valid:
                 self.check_format(login, password)
@@ -44,17 +45,17 @@ class UserSerializer(BaseSerializer):
             self.error_data['type'] = 'IncorrectFormat'
             self.error_data['message'] = error.error_message
 
-
     def check_format(self, login, password):
         if len(login) >= 20:
             self.is_valid = False
             raise IncorrectFormat('Length of "login" must be shorter then 20')
-            
+
         if len(password) <= 8:
             self.is_valid = False
             raise IncorrectFormat('Length of "password" must be longer then 8')
             return
-        
+
+
 class PhotoSerializer(BaseSerializer):
     def __init__(self, path) -> None:
         try:
@@ -72,16 +73,18 @@ class PhotoSerializer(BaseSerializer):
             self.error_data['type'] = 'IncorrectFormat'
             self.error_data['message'] = error.error_message
 
-    def check_format(self, path): # Нужно прописать уже когда будем с фото работать
+    def check_format(self, path):  # Нужно прописать уже когда будем с фото работать
         if len(path) <= 8 or len(path) > 60:
             self.is_valid = False
-            raise IncorrectFormat('Length of "photo_path" must be shorter then 60 and longer then 8')
-        
+            raise IncorrectFormat(
+                'Length of "photo_path" must be shorter then 60 and longer then 8')
+
 
 class MessageSerializer(BaseSerializer):
     def __init__(self, sender_id, content) -> None:
         try:
-            super().__init__([[sender_id, int, 'sender_id'], [content, str, 'content']])
+            super().__init__(
+                [[sender_id, int, 'sender_id'], [content, str, 'content']])
 
             if self.is_valid:
                 self.check_format(sender_id, content)
@@ -95,19 +98,14 @@ class MessageSerializer(BaseSerializer):
             self.error_data['type'] = 'IncorrectFormat'
             self.error_data['message'] = error.error_message
 
-
     def check_format(self, login, password):
         pass
-        
-      
-            
-        
+
+
 # class MessageSerializer
 
 
 # class MessageSerializer(BaseSerializer):
-
-
 
 
 # print(user.is_valid)

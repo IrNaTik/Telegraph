@@ -1,13 +1,13 @@
-from aiohttp import  web
+from aiohttp import web
 from typing import Callable, Any, Union
 from apps.logics.headers import OPTIONS
 from .chats import views
 
 from apps.logics.valid_token import Token, HandlerStatusError
 
+
 class Middleware:
 
-    
     def __init__(self) -> None:
         self.status = 500
         self.body = {}
@@ -20,39 +20,37 @@ class Middleware:
     @web.middleware
     async def midlleware(self, request: web.Request, handler: Callable) -> web.Response:
 
-        if request.rel_url.path == '/login' or request.rel_url.path == '/api/refresh':
-            return await handler(request)
-        else:
-            
-            try:
-                print(request)
-                if request.method != 'OPTIONS':
-                    user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
-                print(request)
-                
-                return await handler(request)
+        return await handler(request)
+        # if request.rel_url.path == '/login' or request.rel_url.path == '/api/refresh':
+        #     return await handler(request)
+        # else:
 
-            except HandlerStatusError as hs:
+        #     try:
+        #         print(request)
+        #         if request.method != 'OPTIONS':
+        #             user_id = await Token().check_jwt_token(request=request) # maybe userid write in request
+        #         print(request)
 
-                if hs.status == 401:
-                    self.status = 401
-                    self.body = {
-                    'type': "token is not valid"
-                    }
-                elif hs.status == 404:
-                    self.status = 401
-                    self.body = {
-                    'type': "token is invalid"
-                    }
+        #         return await handler(request)
 
-                return web.json_response(data=self.body, status=self.status, headers=OPTIONS)
+        #     except HandlerStatusError as hs:
 
-            except Exception as e:
-                self.status = 500
-                self.body = self.get_error_body(e)
-                print(e)  
+        #         if hs.status == 401:
+        #             self.status = 401
+        #             self.body = {
+        #             'type': "token is not valid"
+        #             }
+        #         elif hs.status == 404:
+        #             self.status = 401
+        #             self.body = {
+        #             'type': "token is invalid"
+        #             }
 
-                return web.json_response(data=self.body, status=self.status, headers=OPTIONS)
+        #         return web.json_response(data=self.body, status=self.status, headers=OPTIONS)
 
+        #     except Exception as e:
+        #         self.status = 500
+        #         self.body = self.get_error_body(e)
+        #         print(e)
 
-        
+        #         return web.json_response(data=self.body, status=self.status, headers=OPTIONS)
