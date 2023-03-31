@@ -13,3 +13,7 @@ OPTIONS = {
 LOGIN_OPTIONS = {**OPTIONS}
 LOGIN_OPTIONS.update({'Access-Control-Allow-Headers':
                       '''Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization'''})
+
+MESSAGE_OPTIONS = {**OPTIONS}
+MESSAGE_OPTIONS.update({'Access-Control-Allow-Headers':
+                        'Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization'})

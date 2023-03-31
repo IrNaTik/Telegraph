@@ -3,3 +3,4 @@ main.db расположение при ошибке
 ######### pagination
 -if not exsist 25 messages
 -cheking start
+-переделать scroll chat

@@ -92,7 +92,6 @@ class ChatPagination(web.View):
         first_id = int(self.request.query.get('first_id'))
         second_id = int(self.request.query.get('second_id'))
         start = int(self.request.query.get('start'))
-        print(type(first_id))
 
         resp = await db_provider.chat.add_chat(user1_id=first_id, user2_id=second_id)
 
@@ -109,4 +108,4 @@ class ChatPagination(web.View):
         return web.json_response(data=data, headers=headers.GET)
 
     async def options(self):
-        return web.Response(headers=headers.OPTIONS, status=200)
+        return web.Response(headers=headers.MESSAGE_OPTIONS, status=200)
