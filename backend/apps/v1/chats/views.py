@@ -99,7 +99,7 @@ class ChatPagination(web.View):
         messages = await db_provider.chat.get_chat_messages(table_name=resp['chat_name'], start=start)
 
         next_href = href.create_href(
-            first_id=first_id, second_id=second_id, start=start+25)
+            first_id=first_id, second_id=second_id, start=start)
 
         data = {
             'next_href': next_href,
@@ -108,64 +108,5 @@ class ChatPagination(web.View):
 
         return web.json_response(data=data, headers=headers.GET)
 
-# class GetChatWithUser(web.View):
-#     def __init__(self, request) -> None:
-
-#         self.POST = {
-
-#         }
-#         self.OPTIONS = {
-#             'Access-Control-Allow-Origin': 'http://localhost:3000',
-#             'Access-Control-Allow-Credentials': 'true',
-#             'Allow': 'OPTIONS, GET, POST',
-#             'Access-Control-Request-Method': 'POST',
-#             'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-#             'Access-Control-Allow-Headers': '''authorization''',
-#             'Access-Control-Request-Headers': '''authorization''',
-
-#         }
-#         super().__init__(request)
-
-#     async def get(self):
-
-#         return web.json_response(data={1, 2}, headers=self.GET, status=200)
-
-#     async def options(self):
-#         print('$$$$$$$$')
-#         return web.Response(headers=self.OPTIONS)
-
-
-# async def get_chat_existing(request):
-#     if 'OPTIONS' in str(request):
-#         print('Options')
-#         return web.Response(headers={
-#             'Access-Control-Allow-Origin': 'http://localhost:3000',
-#             'Access-Control-Allow-Credentials': 'true',
-#             'Allow': 'OPTIONS, GET, POST',
-#             'Access-Control-Request-Method': 'POST',
-#             'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-#             'Access-Control-Allow-Headers': '''authorization''',
-#             'Access-Control-Request-Headers': '''authorization''',
-
-#         })
-
-#     print(request.query['username'], 'Good')
-#     print(request.query['myUsername'], 'Good2')
-#     username1 = request.query['username']
-#     username2 = request.query['myUsername']
-
-#     resp1 = await db_provider.user.get_user_id_by_username(username1)
-#     resp2 = await db_provider.user.get_user_id_by_username(username2)
-#     print(resp1, resp2)
-#     if resp1['error'] == False and resp2['error'] == False:
-#         resp = await db_provider.chat.add_chat(resp1['user_id'], resp2['user_id'])
-
-#         if resp['error'] == False and resp['isNewChat'] == False:
-#             return web.json_response(data={'chatExists': True, 'usernameExists': True}, headers={'Access-Control-Allow-Origin': 'http://localhost:3000',
-#                                                                                                  'Access-Control-Allow-Credentials': 'true'}, status=200)
-#         else:
-#             return web.json_response(data={'chatExists': False, 'usernameExists': True}, headers={'Access-Control-Allow-Origin': 'http://localhost:3000',
-#                                                                                                   'Access-Control-Allow-Credentials': 'true'}, status=200)
-#     else:
-#         return web.json_response(data={'chatExists': False, 'usernameExists': False, 'optional': {'user1': resp1, 'user2': resp2}}, headers={'Access-Control-Allow-Origin': 'http://localhost:3000',
-#                                                                                                                                              'Access-Control-Allow-Credentials': 'true'}, status=200)
+    async def options(self):
+        return web.Response(headers=headers.OPTIONS, status=200)

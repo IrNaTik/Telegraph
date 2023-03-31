@@ -211,9 +211,9 @@ class ChatInstance():
                 f'''
                     SELECT sender_id, content, date, is_readen
                     FROM "{table_name}"
-                    WHERE message_id > {start}
-                    AND message_id <= {start+25}
+                    WHERE message_id < {start}
                     ORDER BY message_id DESC
+                    LIMIT 25
                 ''')
             response = await BaseDbWorkMixin._execute_statement(statement, session)
             print(statement)
